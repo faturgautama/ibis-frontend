@@ -33,24 +33,24 @@ import { InboundHeader, InboundStatus } from '../../models/inbound.model';
  * Requirements: 6.4, 6.7
  */
 @Component({
-    selector: 'app-inbound-form',
-    standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        ButtonModule,
-        InputTextModule,
-        TextareaModule,
-        SelectModule,
-        DatePickerModule,
-        InputNumberModule,
-        TableModule,
-        MessageModule,
-        ToastModule,
-        LucideAngularModule
-    ],
-    providers: [MessageService],
-    template: `
+  selector: 'app-inbound-form',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    InputTextModule,
+    TextareaModule,
+    SelectModule,
+    DatePickerModule,
+    InputNumberModule,
+    TableModule,
+    MessageModule,
+    ToastModule,
+    LucideAngularModule
+  ],
+  providers: [MessageService],
+  template: `
     <div class="main-layout overflow-hidden">
       <!-- Page Header -->
       <div class="mb-6">
@@ -232,138 +232,140 @@ import { InboundHeader, InboundStatus } from '../../models/inbound.model';
   `
 })
 export class InboundFormComponent implements OnInit {
-    private fb = inject(FormBuilder);
-    private router = inject(Router);
-    private route = inject(ActivatedRoute);
-    private inboundService = inject(InboundDemoService);
-    private messageService = inject(MessageService);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private inboundService = inject(InboundDemoService);
+  private messageService = inject(MessageService);
 
-    // Icons
-    PackageCheckIcon = PackageCheck;
-    PlusIcon = Plus;
-    Trash2Icon = Trash2;
+  // Icons
+  PackageCheckIcon = PackageCheck;
+  PlusIcon = Plus;
+  Trash2Icon = Trash2;
 
-    // Form
-    inboundForm!: FormGroup;
-    isEditMode = false;
-    inboundId: string | null = null;
-    loading = false;
-    error: string | null = null;
+  // Form
+  inboundForm!: FormGroup;
+  isEditMode = false;
+  inboundId: string | null = null;
+  loading = false;
+  error: string | null = null;
 
-    // Dropdown options
-    statusOptions = [
-        { label: 'Pending', value: InboundStatus.PENDING },
-        { label: 'Received', value: InboundStatus.RECEIVED },
-        { label: 'Quality Check', value: InboundStatus.QUALITY_CHECK },
-        { label: 'Completed', value: InboundStatus.COMPLETED }
-    ];
+  // Dropdown options
+  statusOptions = [
+    { label: 'Pending', value: InboundStatus.PENDING },
+    { label: 'Received', value: InboundStatus.RECEIVED },
+    { label: 'Quality Check', value: InboundStatus.QUALITY_CHECK },
+    { label: 'Completed', value: InboundStatus.COMPLETED }
+  ];
 
-    ngOnInit(): void {
-        this.initializeForm();
-        this.checkEditMode();
+  ngOnInit(): void {
+    this.initializeForm();
+    this.checkEditMode();
+  }
+
+  initializeForm(): void {
+    this.inboundForm = this.fb.group({
+      inbound_number: ['', Validators.required],
+      inbound_date: [new Date(), Validators.required],
+      status: [InboundStatus.PENDING],
+      bc_document_id: [''],
+      bc_document_number: ['', Validators.required],
+      supplier_id: [''],
+      supplier_code: [''],
+      supplier_name: ['', Validators.required],
+      warehouse_id: [''],
+      warehouse_code: [''],
+      warehouse_name: ['', Validators.required],
+      receipt_number: [''],
+      receipt_date: [null],
+      vehicle_number: [''],
+      driver_name: [''],
+      total_items: [0],
+      total_quantity: [0],
+      total_value: [0],
+      notes: ['']
+    });
+  }
+
+  checkEditMode(): void {
+    this.inboundId = this.route.snapshot.paramMap.get('id');
+    if (this.inboundId) {
+      this.isEditMode = true;
+      this.loadInbound(this.inboundId);
     }
+  }
 
-    initializeForm(): void {
-        this.inboundForm = this.fb.group({
-            inbound_number: ['', Validators.required],
-            inbound_date: [new Date(), Validators.required],
-            status: [InboundStatus.PENDING],
-            bc_document_id: [''],
-            bc_document_number: ['', Validators.required],
-            supplier_id: [''],
-            supplier_code: [''],
-            supplier_name: ['', Validators.required],
-            warehouse_id: [''],
-            warehouse_code: [''],
-            warehouse_name: ['', Validators.required],
-            receipt_number: [''],
-            receipt_date: [null],
-            vehicle_number: [''],
-            driver_name: [''],
-            total_items: [0],
-            total_quantity: [0],
-            total_value: [0],
-            notes: ['']
+  loadInbound(id: string): void {
+    this.loading = true;
+    this.inboundService.getById(id).subscribe({
+      next: (inbound) => {
+        this.inboundForm.patchValue({
+          ...inbound,
+          inbound_date: new Date(inbound.inbound_date),
+          receipt_date: inbound.receipt_date ? new Date(inbound.receipt_date) : null
         });
-    }
-
-    checkEditMode(): void {
-        this.inboundId = this.route.snapshot.paramMap.get('id');
-        if (this.inboundId) {
-            this.isEditMode = true;
-            this.loadInbound(this.inboundId);
-        }
-    }
-
-    loadInbound(id: string): void {
-        this.loading = true;
-        this.inboundService.getById(id).subscribe({
-            next: (inbound) => {
-                this.inboundForm.patchValue({
-                    ...inbound,
-                    inbound_date: new Date(inbound.inbound_date),
-                    receipt_date: inbound.receipt_date ? new Date(inbound.receipt_date) : null
-                });
-                this.loading = false;
-            },
-            error: (error) => {
-                this.error = error.error?.message || 'Failed to load inbound';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: this.error
-                });
-                this.loading = false;
-            }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error.error?.message || 'Failed to load inbound';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.error || 'An error occurred'
         });
+        this.loading = false;
+      }
+    });
+  }
+
+  onSubmit(): void {
+    if (this.inboundForm.invalid) {
+      Object.keys(this.inboundForm.controls).forEach(key => {
+        this.inboundForm.get(key)?.markAsTouched();
+      });
+      return;
     }
 
-    onSubmit(): void {
-        if (this.inboundForm.invalid) {
-            Object.keys(this.inboundForm.controls).forEach(key => {
-                this.inboundForm.get(key)?.markAsTouched();
-            });
-            return;
-        }
+    this.loading = true;
+    this.error = null;
 
-        this.loading = true;
-        this.error = null;
+    const formValue = {
+      ...this.inboundForm.value,
+      created_by: 'admin',
+      updated_by: 'admin'
+    };
 
-        const formValue = {
-            ...this.inboundForm.value,
-            created_by: 'admin',
-            updated_by: 'admin'
-        };
-
-        this.inboundService.create(formValue).subscribe({
-            next: () => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Inbound receipt created successfully'
-                });
-                setTimeout(() => {
-                    this.router.navigate(['/inbound']);
-                }, 1000);
-            },
-            error: (error) => {
-                this.error = error.error?.message || 'Failed to save inbound';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: this.error
-                });
-                this.loading = false;
-            }
+    // For now, create with empty details array
+    // In a real implementation, this would include detail items
+    this.inboundService.create(formValue, []).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Inbound receipt created successfully'
         });
-    }
+        setTimeout(() => {
+          this.router.navigate(['/inbound']);
+        }, 1000);
+      },
+      error: (error) => {
+        this.error = error.error?.message || 'Failed to save inbound';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: this.error || 'An error occurred'
+        });
+        this.loading = false;
+      }
+    });
+  }
 
-    onCancel(): void {
-        this.router.navigate(['/inbound']);
-    }
+  onCancel(): void {
+    this.router.navigate(['/inbound']);
+  }
 
-    isFieldInvalid(fieldName: string): boolean {
-        const field = this.inboundForm.get(fieldName);
-        return !!(field && field.invalid && (field.dirty || field.touched));
-    }
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.inboundForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
 }

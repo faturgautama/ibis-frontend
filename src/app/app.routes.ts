@@ -45,7 +45,7 @@ export const routes: Routes = [
             // Master Data - Warehouses
             {
                 path: 'warehouses',
-                loadComponent: () => import('./features/warehouses/components/warehouse-list/warehouse-list.component')
+                loadComponent: () => import('./features/warehouse/components/warehouse-list/warehouse-list.component')
                     .then(m => m.WarehouseListComponent)
             },
             {
@@ -116,6 +116,16 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/outbound/components/outbound-list/outbound-list.component')
                     .then(m => m.OutboundListComponent)
             },
+            {
+                path: 'outbound/new',
+                loadComponent: () => import('./features/outbound/components/outbound-form/outbound-form.component')
+                    .then(m => m.OutboundFormComponent)
+            },
+            {
+                path: 'outbound/:id/edit',
+                loadComponent: () => import('./features/outbound/components/outbound-form/outbound-form.component')
+                    .then(m => m.OutboundFormComponent)
+            },
 
             // Transactions - Production
             {
@@ -123,10 +133,30 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/production/components/production-list/production-list.component')
                     .then(m => m.ProductionListComponent)
             },
+            {
+                path: 'production/new',
+                loadComponent: () => import('./features/production/components/production-form/production-form.component')
+                    .then(m => m.ProductionFormComponent)
+            },
+            {
+                path: 'production/:id/edit',
+                loadComponent: () => import('./features/production/components/production-form/production-form.component')
+                    .then(m => m.ProductionFormComponent)
+            },
 
             // Transactions - Stock Mutation
             {
                 path: 'stock-mutation',
+                loadComponent: () => import('./features/stock-mutation/components/stock-mutation-form/stock-mutation-form.component')
+                    .then(m => m.StockMutationFormComponent)
+            },
+            {
+                path: 'stock-mutation/new',
+                loadComponent: () => import('./features/stock-mutation/components/stock-mutation-form/stock-mutation-form.component')
+                    .then(m => m.StockMutationFormComponent)
+            },
+            {
+                path: 'stock-mutation/:id/edit',
                 loadComponent: () => import('./features/stock-mutation/components/stock-mutation-form/stock-mutation-form.component')
                     .then(m => m.StockMutationFormComponent)
             },
@@ -136,6 +166,16 @@ export const routes: Routes = [
                 path: 'stock-opname',
                 loadComponent: () => import('./features/stock-opname/components/stock-opname-list/stock-opname-list.component')
                     .then(m => m.StockOpnameListComponent)
+            },
+            {
+                path: 'stock-opname/new',
+                loadComponent: () => import('./features/stock-opname/components/stock-opname-form/stock-opname-form.component')
+                    .then(m => m.StockOpnameFormComponent)
+            },
+            {
+                path: 'stock-opname/:id/edit',
+                loadComponent: () => import('./features/stock-opname/components/stock-opname-form/stock-opname-form.component')
+                    .then(m => m.StockOpnameFormComponent)
             },
 
             // Stock Management - Stock Balance
