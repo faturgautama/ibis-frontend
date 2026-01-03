@@ -31,12 +31,32 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/inventory/components/item-list/item-list.component')
                     .then(m => m.ItemListComponent)
             },
+            {
+                path: 'inventory/items/new',
+                loadComponent: () => import('./features/inventory/components/item-form/item-form.component')
+                    .then(m => m.ItemFormComponent)
+            },
+            {
+                path: 'inventory/items/:id/edit',
+                loadComponent: () => import('./features/inventory/components/item-form/item-form.component')
+                    .then(m => m.ItemFormComponent)
+            },
 
             // Master Data - Warehouses
             {
                 path: 'warehouses',
                 loadComponent: () => import('./features/warehouses/components/warehouse-list/warehouse-list.component')
                     .then(m => m.WarehouseListComponent)
+            },
+            {
+                path: 'warehouses/new',
+                loadComponent: () => import('./features/warehouse/components/warehouse-form/warehouse-form.component')
+                    .then(m => m.WarehouseFormComponent)
+            },
+            {
+                path: 'warehouses/:id/edit',
+                loadComponent: () => import('./features/warehouse/components/warehouse-form/warehouse-form.component')
+                    .then(m => m.WarehouseFormComponent)
             },
 
             // Master Data - Suppliers
@@ -45,6 +65,16 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/suppliers-customers/components/supplier-list/supplier-list.component')
                     .then(m => m.SupplierListComponent)
             },
+            {
+                path: 'suppliers/new',
+                loadComponent: () => import('./features/suppliers-customers/components/supplier-form/supplier-form.component')
+                    .then(m => m.SupplierFormComponent)
+            },
+            {
+                path: 'suppliers/:id/edit',
+                loadComponent: () => import('./features/suppliers-customers/components/supplier-form/supplier-form.component')
+                    .then(m => m.SupplierFormComponent)
+            },
 
             // Master Data - Customers
             {
@@ -52,12 +82,32 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/suppliers-customers/components/customer-list/customer-list.component')
                     .then(m => m.CustomerListComponent)
             },
+            {
+                path: 'customers/new',
+                loadComponent: () => import('./features/suppliers-customers/components/customer-form/customer-form.component')
+                    .then(m => m.CustomerFormComponent)
+            },
+            {
+                path: 'customers/:id/edit',
+                loadComponent: () => import('./features/suppliers-customers/components/customer-form/customer-form.component')
+                    .then(m => m.CustomerFormComponent)
+            },
 
             // Transactions - Inbound
             {
                 path: 'inbound',
                 loadComponent: () => import('./features/inbound/components/inbound-list/inbound-list.component')
                     .then(m => m.InboundListComponent)
+            },
+            {
+                path: 'inbound/create',
+                loadComponent: () => import('./features/inbound/components/inbound-form/inbound-form.component')
+                    .then(m => m.InboundFormComponent)
+            },
+            {
+                path: 'inbound/:id',
+                loadComponent: () => import('./features/inbound/components/inbound-form/inbound-form.component')
+                    .then(m => m.InboundFormComponent)
             },
 
             // Transactions - Outbound
@@ -100,6 +150,16 @@ export const routes: Routes = [
                 path: 'bc-documents',
                 loadComponent: () => import('./features/bc-documents/components/bc-document-list/bc-document-list.component')
                     .then(m => m.BCDocumentListComponent)
+            },
+            {
+                path: 'bc-documents/new',
+                loadComponent: () => import('./features/bc-documents/components/bc-document-form/bc-document-form.component')
+                    .then(m => m.BCDocumentFormComponent)
+            },
+            {
+                path: 'bc-documents/:id/edit',
+                loadComponent: () => import('./features/bc-documents/components/bc-document-form/bc-document-form.component')
+                    .then(m => m.BCDocumentFormComponent)
             },
 
             // Customs - Customs Sync

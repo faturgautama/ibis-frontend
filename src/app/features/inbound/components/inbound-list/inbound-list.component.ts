@@ -11,24 +11,33 @@ import { MessageService } from 'primeng/api';
 import { InboundHeader, getInboundStatusLabel } from '../../models/inbound.model';
 
 @Component({
-    selector: 'app-inbound-list',
-    standalone: true,
-    imports: [CommonModule, TableModule, ButtonModule, TagModule, ToastModule, LucideAngularModule],
-    providers: [MessageService],
-    template: `
-    <div class="p-6">
-      <div class="mb-6 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <lucide-icon [img]="PackageCheckIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
-          <h1 class="text-2xl font-semibold text-gray-900">Inbound Receipts</h1>
+  selector: 'app-inbound-list',
+  standalone: true,
+  imports: [CommonModule, TableModule, ButtonModule, TagModule, ToastModule, LucideAngularModule],
+  providers: [MessageService],
+  template: `
+    <div class="main-layout">
+      <!-- Page Header -->
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+            <lucide-icon [img]="PackageCheckIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
+            Inbound Receipts
+          </h1>
+          <p class="text-sm text-gray-600 mt-1">Manage inbound receipts and deliveries</p>
         </div>
-        <button pButton (click)="onCreate()" class="flex items-center gap-2">
-          <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-          <span>Create Inbound</span>
-        </button>
+        <button
+          pButton
+          type="button"
+          label="Create Inbound"
+          icon="pi pi-plus"
+          class="p-button-primary"
+          (click)="onCreate()"
+        ></button>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm">
+      <!-- Table Card -->
+      <div class="bg-white rounded-lg shadow-sm p-6" style="max-height: calc(100vh - 13rem); overflow-y: auto">
         <p-table [value]="inbounds" [paginator]="true" [rows]="20" [loading]="loading">
           <ng-template pTemplate="header">
             <tr>
@@ -63,42 +72,42 @@ import { InboundHeader, getInboundStatusLabel } from '../../models/inbound.model
   `
 })
 export class InboundListComponent implements OnInit {
-    private router = inject(Router);
-    private inboundService = inject(InboundDemoService);
-    private messageService = inject(MessageService);
+  private router = inject(Router);
+  private inboundService = inject(InboundDemoService);
+  private messageService = inject(MessageService);
 
-    PackageCheckIcon = PackageCheck;
-    PlusIcon = Plus;
-    inbounds: InboundHeader[] = [];
-    loading = false;
+  PackageCheckIcon = PackageCheck;
+  PlusIcon = Plus;
+  inbounds: InboundHeader[] = [];
+  loading = false;
 
-    ngOnInit(): void {
-        this.loadInbounds();
-    }
+  ngOnInit(): void {
+    this.loadInbounds();
+  }
 
-    loadInbounds(): void {
-        this.loading = true;
-        this.inboundService.getAll().subscribe({
-            next: (data) => {
-                this.inbounds = data;
-                this.loading = false;
-            },
-            error: () => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load inbounds' });
-                this.loading = false;
-            }
-        });
-    }
+  loadInbounds(): void {
+    this.loading = true;
+    this.inboundService.getAll().subscribe({
+      next: (data) => {
+        this.inbounds = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load inbounds' });
+        this.loading = false;
+      }
+    });
+  }
 
-    onCreate(): void {
-        this.router.navigate(['/inbound/create']);
-    }
+  onCreate(): void {
+    this.router.navigate(['/inbound/create']);
+  }
 
-    onView(inbound: InboundHeader): void {
-        this.router.navigate(['/inbound', inbound.id]);
-    }
+  onView(inbound: InboundHeader): void {
+    this.router.navigate(['/inbound', inbound.id]);
+  }
 
-    getInboundStatusLabel(status: any): string {
-        return getInboundStatusLabel(status);
-    }
+  getInboundStatusLabel(status: any): string {
+    return getInboundStatusLabel(status);
+  }
 }

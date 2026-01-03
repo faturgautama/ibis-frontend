@@ -44,7 +44,7 @@ export class DashboardLayoutComponent {
    * Computed property: Get content area minimum height
    */
   get contentMinHeight(): string {
-    return `calc(100vh - ${this.navbarHeight})`;
+    return `calc(100vh - 7rem)`;
   }
 
   /**
@@ -53,7 +53,7 @@ export class DashboardLayoutComponent {
   get contentAreaStyle(): { [key: string]: string } {
     return {
       'margin-top': this.contentMarginTop,
-      'min-height': this.contentMinHeight,
+      'height': this.contentMinHeight,
       'overflow-y': 'auto'
     };
   }

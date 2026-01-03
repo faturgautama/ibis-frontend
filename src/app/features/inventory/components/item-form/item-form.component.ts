@@ -51,7 +51,7 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
     LucideAngularModule
   ],
   template: `
-    <div class="p-6 max-w-5xl mx-auto">
+    <div class="main-layout overflow-hidden">
       <!-- Page Header -->
       <div class="mb-6">
         <div class="flex items-center gap-2 mb-2">
@@ -66,7 +66,7 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
       </div>
 
       <!-- Form Card -->
-      <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="bg-white rounded-lg shadow-sm p-6" style="max-height: calc(100vh - 13rem); overflow-x: auto">
         <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
           <!-- Basic Information Section -->
           <div class="mb-6">
@@ -766,7 +766,7 @@ export class ItemFormComponent implements OnInit {
    * Navigate back to items list
    */
   private navigateToItemsList(): void {
-    this.router.navigate(['/inventory/items']);
+    this.router.navigate(['/inventory']);
   }
 
   /**

@@ -13,7 +13,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 
 // Lucide icons
-import { LucideAngularModule, FileText, Plus, Edit, Trash2, Send, CheckCircle, XCircle } from 'lucide-angular';
+import { LucideAngularModule, FileText, Plus } from 'lucide-angular';
 
 // Services
 import { BCDocumentDemoService } from '../../services/bc-document-demo.service';
@@ -43,49 +43,67 @@ import { BCDocument, BCDocType, BCDocStatus, getBCDocTypeLabel, getBCDocStatusLa
   ],
   providers: [ConfirmationService, MessageService],
   template: `
-    <div class="p-6">
-      <div class="mb-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2">
-            <lucide-icon [img]="FileTextIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
+    <div class="main-layout">
+      <!-- Page Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <lucide-icon [img]="FileTextIcon" class="w-8 h-8 text-sky-600"></lucide-icon>
+          <div>
             <h1 class="text-2xl font-semibold text-gray-900">BC Documents</h1>
+            <p class="text-sm text-gray-600 mt-1">Manage customs documents</p>
           </div>
-          <button pButton (click)="onCreate()" class="flex items-center gap-2">
-            <lucide-icon [img]="PlusIcon" class="w-4 h-4"></lucide-icon>
-            <span>Create Document</span>
-          </button>
         </div>
+        <button 
+          pButton 
+          type="button"
+          label="Create Document" 
+          icon="pi pi-plus"
+          class="p-button-primary"
+          (click)="onCreate()"
+        ></button>
+      </div>
 
-        <div class="flex gap-4 mb-4">
-          <div class="flex-1">
+      <!-- Filters Section -->
+      <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-gray-700 mb-1">Search</label>
             <input 
               pInputText 
+              type="text"
               [(ngModel)]="searchTerm" 
               (input)="onSearch()" 
               placeholder="Search by document number, partner name..."
               class="w-full"
             />
           </div>
-          <p-select
-            [(ngModel)]="selectedType"
-            [options]="typeOptions"
-            placeholder="All Types"
-            (onChange)="onFilterChange()"
-            [showClear]="true"
-            class="w-48"
-          />
-          <p-select
-            [(ngModel)]="selectedStatus"
-            [options]="statusOptions"
-            placeholder="All Status"
-            (onChange)="onFilterChange()"
-            [showClear]="true"
-            class="w-48"
-          />
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-gray-700 mb-1">Document Type</label>
+            <p-select
+              [(ngModel)]="selectedType"
+              [options]="typeOptions"
+              placeholder="All Types"
+              (onChange)="onFilterChange()"
+              [showClear]="true"
+              class="w-full"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-gray-700 mb-1">Status</label>
+            <p-select
+              [(ngModel)]="selectedStatus"
+              [options]="statusOptions"
+              placeholder="All Status"
+              (onChange)="onFilterChange()"
+              [showClear]="true"
+              class="w-full"
+            />
+          </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm">
+      <!-- Data Table -->
+      <div class="bg-white rounded-lg shadow-sm" style="max-height: calc(100vh - 20rem); overflow-y: auto">
         <p-table
           [value]="filteredDocuments"
           [paginator]="true"
@@ -94,7 +112,6 @@ import { BCDocument, BCDocType, BCDocStatus, getBCDocTypeLabel, getBCDocStatusLa
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} documents"
           [rowsPerPageOptions]="[10, 20, 50]"
           [loading]="loading"
-          styleClass="p-datatable-sm"
         >
           <ng-template pTemplate="header">
             <tr>
@@ -111,9 +128,7 @@ import { BCDocument, BCDocType, BCDocStatus, getBCDocTypeLabel, getBCDocStatusLa
             <tr>
               <td>
                 <div class="font-medium text-gray-900">{{ doc.doc_number }}</div>
-                @if (doc.ceisa_response_number) {
-                  <div class="text-xs text-gray-500">CEISA: {{ doc.ceisa_response_number }}</div>
-                }
+                <div *ngIf="doc.ceisa_response_number" class="text-xs text-gray-500">CEISA: {{ doc.ceisa_response_number }}</div>
               </td>
               <td>
                 <span class="text-sm">{{ getBCDocTypeLabel(doc.doc_type) }}</span>
@@ -136,33 +151,36 @@ import { BCDocument, BCDocType, BCDocStatus, getBCDocTypeLabel, getBCDocStatusLa
               </td>
               <td>
                 <div class="flex items-center justify-center gap-2">
-                  @if (doc.status === 'DRAFT') {
-                    <button
-                      pButton
-                      icon="pi pi-send"
-                      class="p-button-rounded p-button-text p-button-sm"
-                      (click)="onSubmit(doc)"
-                      pTooltip="Submit"
-                    ></button>
-                  }
-                  @if (doc.status === 'SUBMITTED') {
-                    <button
-                      pButton
-                      icon="pi pi-check"
-                      class="p-button-rounded p-button-text p-button-success p-button-sm"
-                      (click)="onApprove(doc)"
-                      pTooltip="Approve"
-                    ></button>
-                    <button
-                      pButton
-                      icon="pi pi-times"
-                      class="p-button-rounded p-button-text p-button-danger p-button-sm"
-                      (click)="onReject(doc)"
-                      pTooltip="Reject"
-                    ></button>
-                  }
+                  <button
+                    *ngIf="doc.status === 'DRAFT'"
+                    pButton
+                    type="button"
+                    icon="pi pi-send"
+                    class="p-button-rounded p-button-text p-button-sm"
+                    (click)="onSubmit(doc)"
+                    pTooltip="Submit"
+                  ></button>
+                  <button
+                    *ngIf="doc.status === 'SUBMITTED'"
+                    pButton
+                    type="button"
+                    icon="pi pi-check"
+                    class="p-button-rounded p-button-text p-button-success p-button-sm"
+                    (click)="onApprove(doc)"
+                    pTooltip="Approve"
+                  ></button>
+                  <button
+                    *ngIf="doc.status === 'SUBMITTED'"
+                    pButton
+                    type="button"
+                    icon="pi pi-times"
+                    class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                    (click)="onReject(doc)"
+                    pTooltip="Reject"
+                  ></button>
                   <button
                     pButton
+                    type="button"
                     icon="pi pi-pencil"
                     class="p-button-rounded p-button-text p-button-sm"
                     (click)="onEdit(doc)"
@@ -171,6 +189,7 @@ import { BCDocument, BCDocType, BCDocStatus, getBCDocTypeLabel, getBCDocStatusLa
                   ></button>
                   <button
                     pButton
+                    type="button"
                     icon="pi pi-trash"
                     class="p-button-rounded p-button-text p-button-danger p-button-sm"
                     (click)="onDelete(doc)"
@@ -205,11 +224,6 @@ export class BCDocumentListComponent implements OnInit {
   // Icons
   FileTextIcon = FileText;
   PlusIcon = Plus;
-  EditIcon = Edit;
-  Trash2Icon = Trash2;
-  SendIcon = Send;
-  CheckCircleIcon = CheckCircle;
-  XCircleIcon = XCircle;
 
   documents: BCDocument[] = [];
   filteredDocuments: BCDocument[] = [];
@@ -291,7 +305,7 @@ export class BCDocumentListComponent implements OnInit {
   }
 
   onCreate(): void {
-    this.router.navigate(['/bc-documents/create']);
+    this.router.navigate(['/bc-documents/new']);
   }
 
   onEdit(document: BCDocument): void {

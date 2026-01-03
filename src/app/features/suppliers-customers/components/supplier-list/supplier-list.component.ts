@@ -14,7 +14,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 
 // Lucide icons
-import { LucideAngularModule, Users, Search, Edit, Trash2, Plus } from 'lucide-angular';
+import { LucideAngularModule, Users } from 'lucide-angular';
 
 // Services
 import { SupplierDemoService } from '../../services/supplier-demo.service';
@@ -31,31 +31,31 @@ import { Supplier } from '../../models/supplier.model';
  * Requirements: 4.1, 4.2, 4.3
  */
 @Component({
-    selector: 'app-supplier-list',
-    standalone: true,
-    imports: [
-        CommonModule,
-        FormsModule,
-        TableModule,
-        ButtonModule,
-        InputTextModule,
-        SelectModule,
-        TagModule,
-        TooltipModule,
-        ConfirmDialogModule,
-        LucideAngularModule
-    ],
-    providers: [ConfirmationService],
-    template: `
-    <div class="p-6">
+  selector: 'app-supplier-list',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    SelectModule,
+    TagModule,
+    TooltipModule,
+    ConfirmDialogModule,
+    LucideAngularModule
+  ],
+  providers: [ConfirmationService],
+  template: `
+    <div class="main-layout">
       <!-- Page Header -->
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
-            <lucide-icon [img]="UsersIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
-            Suppliers
-          </h1>
-          <p class="text-sm text-gray-600 mt-1">Manage supplier information</p>
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <lucide-icon [img]="UsersIcon" class="w-8 h-8 text-sky-600"></lucide-icon>
+          <div>
+            <h1 class="text-2xl font-semibold text-gray-900">Suppliers</h1>
+            <p class="text-sm text-gray-600 mt-1">Manage supplier information</p>
+          </div>
         </div>
         <button
           pButton
@@ -73,17 +73,14 @@ import { Supplier } from '../../models/supplier.model';
           <!-- Search -->
           <div class="flex flex-col">
             <label class="text-sm font-medium text-gray-700 mb-1">Search</label>
-            <span class="p-input-icon-left w-full">
-              <lucide-icon [img]="SearchIcon" class="w-4 h-4"></lucide-icon>
-              <input
-                pInputText
-                type="text"
-                placeholder="Search by code, name, or tax ID..."
-                [(ngModel)]="searchQuery"
-                (input)="onSearchChange()"
-                class="w-full"
-              />
-            </span>
+            <input
+              pInputText
+              type="text"
+              placeholder="Search by code, name, or tax ID..."
+              [(ngModel)]="searchQuery"
+              (input)="onSearchChange()"
+              class="w-full"
+            />
           </div>
 
           <!-- Status Filter -->
@@ -95,21 +92,19 @@ import { Supplier } from '../../models/supplier.model';
               (onChange)="onFilterChange()"
               placeholder="All Suppliers"
               [showClear]="true"
-              styleClass="w-full"
+              class="w-full"
             ></p-select>
           </div>
         </div>
       </div>
 
       <!-- Error Message -->
-      @if (error) {
-        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <p class="text-sm text-red-800">{{ error }}</p>
-        </div>
-      }
+      <div *ngIf="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <p class="text-sm text-red-800">{{ error }}</p>
+      </div>
 
       <!-- Data Table -->
-      <div class="bg-white rounded-lg shadow-sm">
+      <div class="bg-white rounded-lg shadow-sm" style="max-height: calc(100vh - 20rem); overflow-y: auto">
         <p-table
           [value]="filteredSuppliers"
           [loading]="loading"
@@ -118,7 +113,6 @@ import { Supplier } from '../../models/supplier.model';
           [rowsPerPageOptions]="[10, 25, 50, 100]"
           [showCurrentPageReport]="true"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} suppliers"
-          styleClass="p-datatable-sm"
         >
           <ng-template pTemplate="header">
             <tr>
@@ -200,104 +194,100 @@ import { Supplier } from '../../models/supplier.model';
   `
 })
 export class SupplierListComponent implements OnInit {
-    private router = inject(Router);
-    private confirmationService = inject(ConfirmationService);
-    private supplierService = inject(SupplierDemoService);
+  private router = inject(Router);
+  private confirmationService = inject(ConfirmationService);
+  private supplierService = inject(SupplierDemoService);
 
-    // Icons
-    UsersIcon = Users;
-    SearchIcon = Search;
-    EditIcon = Edit;
-    Trash2Icon = Trash2;
-    PlusIcon = Plus;
+  // Icons
+  UsersIcon = Users;
 
-    // Data
-    suppliers: Supplier[] = [];
-    filteredSuppliers: Supplier[] = [];
-    loading = false;
-    error: string | null = null;
+  // Data
+  suppliers: Supplier[] = [];
+  filteredSuppliers: Supplier[] = [];
+  loading = false;
+  error: string | null = null;
 
-    // Filters
-    searchQuery = '';
-    selectedStatus: boolean | null = null;
+  // Filters
+  searchQuery = '';
+  selectedStatus: boolean | null = null;
 
-    statusOptions = [
-        { label: 'Active Only', value: true },
-        { label: 'Inactive Only', value: false }
-    ];
+  statusOptions = [
+    { label: 'Active Only', value: true },
+    { label: 'Inactive Only', value: false }
+  ];
 
-    ngOnInit(): void {
-        this.loadSuppliers();
-    }
+  ngOnInit(): void {
+    this.loadSuppliers();
+  }
 
-    loadSuppliers(): void {
-        this.loading = true;
-        this.error = null;
+  loadSuppliers(): void {
+    this.loading = true;
+    this.error = null;
 
-        this.supplierService.getAll().subscribe({
-            next: (suppliers) => {
-                this.suppliers = suppliers;
-                this.applyFilters();
-                this.loading = false;
-            },
-            error: (error) => {
-                this.error = error.error?.message || 'Failed to load suppliers';
-                this.loading = false;
-            }
-        });
-    }
-
-    onSearchChange(): void {
+    this.supplierService.getAll().subscribe({
+      next: (suppliers) => {
+        this.suppliers = suppliers;
         this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error.error?.message || 'Failed to load suppliers';
+        this.loading = false;
+      }
+    });
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onFilterChange(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.suppliers];
+
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(s =>
+        s.supplier_code.toLowerCase().includes(query) ||
+        s.supplier_name.toLowerCase().includes(query) ||
+        s.tax_id.toLowerCase().includes(query)
+      );
     }
 
-    onFilterChange(): void {
-        this.applyFilters();
+    if (this.selectedStatus !== null) {
+      filtered = filtered.filter(s => s.active === this.selectedStatus);
     }
 
-    applyFilters(): void {
-        let filtered = [...this.suppliers];
+    this.filteredSuppliers = filtered;
+  }
 
-        if (this.searchQuery) {
-            const query = this.searchQuery.toLowerCase();
-            filtered = filtered.filter(s =>
-                s.supplier_code.toLowerCase().includes(query) ||
-                s.supplier_name.toLowerCase().includes(query) ||
-                s.tax_id.toLowerCase().includes(query)
-            );
-        }
+  onCreateSupplier(): void {
+    this.router.navigate(['/suppliers/new']);
+  }
 
-        if (this.selectedStatus !== null) {
-            filtered = filtered.filter(s => s.active === this.selectedStatus);
-        }
+  onEditSupplier(supplier: Supplier): void {
+    this.router.navigate(['/suppliers', supplier.id, 'edit']);
+  }
 
-        this.filteredSuppliers = filtered;
-    }
-
-    onCreateSupplier(): void {
-        this.router.navigate(['/suppliers/new']);
-    }
-
-    onEditSupplier(supplier: Supplier): void {
-        this.router.navigate(['/suppliers', supplier.id, 'edit']);
-    }
-
-    onDeleteSupplier(supplier: Supplier): void {
-        this.confirmationService.confirm({
-            message: `Are you sure you want to delete supplier "${supplier.supplier_name}"?`,
-            header: 'Confirm Deletion',
-            icon: 'pi pi-exclamation-triangle',
-            acceptButtonStyleClass: 'p-button-danger',
-            accept: () => {
-                this.supplierService.delete(supplier.id).subscribe({
-                    next: () => {
-                        this.loadSuppliers();
-                    },
-                    error: (error) => {
-                        this.error = error.error?.message || 'Failed to delete supplier';
-                    }
-                });
-            }
+  onDeleteSupplier(supplier: Supplier): void {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete supplier "${supplier.supplier_name}"?`,
+      header: 'Confirm Deletion',
+      icon: 'pi pi-exclamation-triangle',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.supplierService.delete(supplier.id).subscribe({
+          next: () => {
+            this.loadSuppliers();
+          },
+          error: (error) => {
+            this.error = error.error?.message || 'Failed to delete supplier';
+          }
         });
-    }
+      }
+    });
+  }
 }
