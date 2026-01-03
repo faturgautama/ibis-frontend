@@ -157,36 +157,36 @@ Implementasi sistem IBIS (Integrated Bonded Inventory System) menggunakan Angula
 
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 5. Implement Master Data - Warehouses Module
+- [x] 5. Implement Master Data - Warehouses Module
 
-  - [ ] 5.1 Create warehouse models and enums
+  - [x] 5.1 Create warehouse models and enums
 
     - Define Warehouse interface
     - Define WarehouseType enum (RAW_MATERIAL, WIP, FINISHED_GOODS, QUARANTINE)
     - _Requirements: 3.2, 3.3_
 
-  - [ ] 5.2 Implement WarehouseDemoService
+  - [x] 5.2 Implement WarehouseDemoService
 
     - Implement CRUD operations using localStorage
     - Implement validation for bonded warehouse license
     - Implement license expiry alert logic
     - _Requirements: 3.1, 3.5, 3.6_
 
-  - [ ] 5.3 Implement WarehouseApiService (Production Mode)
+  - [x] 5.3 Implement WarehouseApiService (Production Mode)
 
     - Implement CRUD operations with HTTP client
     - Implement capacity tracking
     - Implement utilization calculation
     - _Requirements: 3.1, 3.4_
 
-  - [ ]\* 5.4 Write property tests for warehouse operations
+  - [x]\* 5.4 Write property tests for warehouse operations
 
     - **Property 10: Warehouse Required Fields Validation**
     - **Property 11: Bonded Warehouse License Validation**
     - **Property 12: Warehouse License Expiry Alert**
     - **Validates: Requirements 3.2, 3.5, 3.6**
 
-  - [ ] 5.5 Create warehouse list and form components
+  - [x] 5.5 Create warehouse list and form components
 
     - Create warehouse list with data table
     - **Use Tailwind CSS inline styling** (no separate .scss file)
@@ -195,7 +195,7 @@ Implementasi sistem IBIS (Integrated Bonded Inventory System) menggunakan Angula
     - Display capacity and utilization metrics
     - _Requirements: 3.1, 3.2, 3.4, 3.6_
 
-  - [ ]\* 5.6 Write unit tests for warehouse components
+  - [x]\* 5.6 Write unit tests for warehouse components
     - Test warehouse form validation
     - Test license expiry alerts
     - Test capacity calculations

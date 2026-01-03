@@ -225,7 +225,10 @@ describe('ItemListComponent', () => {
         it('should dispatch deleteItem action on delete confirmation', () => {
             spyOn(store, 'dispatch');
             spyOn(confirmationService, 'confirm').and.callFake((config: any) => {
-                config.accept();
+                if (config.accept) {
+                    config.accept();
+                }
+                return confirmationService;
             });
 
             const item = mockItems[0];

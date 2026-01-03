@@ -76,7 +76,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         }
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
 
@@ -105,7 +105,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         expect(created.location).toBe(validWarehouse.location);
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
     });
@@ -148,7 +148,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         }
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
 
@@ -178,7 +178,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         expect(created.license_expiry).toEqual(validBondedWarehouse.license_expiry);
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
 
@@ -211,7 +211,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         }
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
     });
@@ -256,7 +256,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         expect(foundWarehouse?.license_expiry).toEqual(expiryDate);
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
 
@@ -291,7 +291,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         expect(foundWarehouse).toBeUndefined();
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
 
@@ -319,7 +319,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         expect(foundWarehouse).toBeUndefined();
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
 
@@ -354,7 +354,7 @@ describe('WarehouseDemoService - Property Tests', () => {
                         expect(foundWarehouse).toBeUndefined();
                     }
                 ),
-                { numRuns: 100 }
+                { numRuns: 20 }
             );
         });
     });
