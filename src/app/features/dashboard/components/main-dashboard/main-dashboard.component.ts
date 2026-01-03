@@ -25,7 +25,7 @@ import { switchMap } from 'rxjs/operators';
         TimelineModule
     ],
     template: `
-        <div class="p-6 bg-gray-50 min-h-screen">
+        <div class="p-6 main-layout">
             <h1 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
 
             <!-- Metrics Cards -->

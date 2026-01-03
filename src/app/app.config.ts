@@ -10,6 +10,9 @@ import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { provideStore } from '@ngrx/store';
+
+import * as inventoryStore from './store/inventory'
 
 const myPreset = definePreset(Aura, {
   darkModeSelector: 'my-app-dark',
@@ -30,6 +33,10 @@ const myPreset = definePreset(Aura, {
   }
 });
 
+const myStore = {
+  inventory: inventoryStore.inventoryReducer
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -48,6 +55,7 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+    provideStore(myStore),
     MessageService
   ]
 };

@@ -27,7 +27,7 @@ export const routes: Routes = [
 
             // Master Data - Items
             {
-                path: 'items',
+                path: 'inventory',
                 loadComponent: () => import('./features/inventory/components/item-list/item-list.component')
                     .then(m => m.ItemListComponent)
             },

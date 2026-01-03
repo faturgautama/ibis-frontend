@@ -98,6 +98,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
    * Navigate to menu item and collapse on mobile
    */
   handleClickMenu(item: MenuItem): void {
+    console.log("menu =>", item);
     this.navigateToRoute(item.route);
   }
 
