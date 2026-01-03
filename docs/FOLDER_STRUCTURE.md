@@ -1,4 +1,4 @@
-# KEK IT Inventory - Folder Structure
+# IBIS - Integrated Bonded Inventory System - Folder Structure
 
 ## Angular 20 Standalone Components Architecture
 

@@ -1,6 +1,6 @@
-# KEK IT Inventory System
+# IBIS - Integrated Bonded Inventory System
 
-Sistem Informasi Inventory Kawasan Ekonomi Khusus (KEK) dengan integrasi Bea Cukai dan Traceability System.
+Sistem Informasi Inventory Kawasan Berikat dengan integrasi Bea Cukai dan Traceability System.
 
 ## 📚 Documentation
 

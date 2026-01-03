@@ -145,35 +145,35 @@ $error-color: #ef4444; // red-500 - validation errors
 
 _A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
-### Property 1: Template Compilation
+### Property 1: Color Contrast Accessibility
 
-_For any_ valid Angular component template, when parsed by the Angular compiler, it should compile without syntax errors.
-
-**Validates: Requirements 1.1, 1.2**
-
-### Property 2: Responsive Layout Integrity
-
-_For any_ viewport width between 320px and 2560px, the login card should remain centered, readable, and fully functional.
-
-**Validates: Requirements 3.4**
-
-### Property 3: Color Contrast Accessibility
-
-_For any_ text element on the login page, the contrast ratio between text and background should meet WCAG AA standards (minimum 4.5:1 for normal text).
+_For any_ text element on the login page, the contrast ratio between text and background should meet WCAG AA standards (minimum 4.5:1 for normal text, 3:1 for large text).
 
 **Validates: Requirements 2.3**
 
-### Property 4: Form Validation Visual Feedback
+### Property 2: Responsive Layout Integrity
 
-_For any_ form field with validation errors, when the field is touched and invalid, an error message should be displayed below the field.
+_For any_ viewport width between 320px and 2560px, the login card should remain centered, readable, and fully functional without horizontal scrolling or layout breaks.
+
+**Validates: Requirements 3.4**
+
+### Property 3: Consistent Form Element Spacing
+
+_For any_ pair of adjacent form elements in the login form, the vertical spacing between them should be consistent (1.5rem as defined in form-field margin-bottom).
+
+**Validates: Requirements 3.2**
+
+### Property 4: Form Validation Error Display
+
+_For any_ form field that is invalid and touched, an error message should be displayed below the field with consistent styling (red text, 0.25rem top margin, text-red-600 class).
 
 **Validates: Requirements 5.1, 5.2**
 
-### Property 5: Demo Credentials Visibility
+### Property 5: Demo Credentials Form Population
 
-_For any_ state where `showDemoCredentials()` returns true, the demo credentials section should be rendered in the card footer.
+_For any_ demo role (admin, warehouse, production, audit), clicking the corresponding demo button should populate the email and password fields with the correct credentials for that role.
 
-**Validates: Requirements 6.1, 6.2**
+**Validates: Requirements 6.4**
 
 ## Error Handling
 

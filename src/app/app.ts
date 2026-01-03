@@ -10,5 +10,5 @@ import { ToastModule } from 'primeng/toast';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('kek-it-inventory');
+  protected readonly title = signal('IBIS - Integrated Bonded Inventory System');
 }

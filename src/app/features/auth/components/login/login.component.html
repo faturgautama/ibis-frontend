@@ -3,8 +3,11 @@
         <p-card>
             <ng-template pTemplate="header">
                 <div class="login-header">
-                    <h1 class="text-3xl font-bold text-gray-900">KEK IT Inventory</h1>
-                    <p class="text-sm text-gray-600 mt-2">Sistem Informasi Inventory Kawasan Ekonomi Khusus</p>
+                    <div class="logo-container">
+                        <img src="assets/images/network-security.png" alt="IBIS Logo" class="logo-image" />
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mt-4">IBIS</h1>
+                    <p class="text-sm text-gray-200 mt-2">Integrated Bonded Inventory System</p>
                 </div>
             </ng-template>
 
@@ -35,18 +38,18 @@
                     }
                 </div>
 
-                <div class="form-field">
+                <div class="form-field flex gap-2">
                     <p-checkbox formControlName="rememberMe" [binary]="true" inputId="rememberMe" label="Remember me" />
+                    <label for="rememberMe" class="ml-2 text-sm text-gray-500"> Remember me </label>
                 </div>
 
-                <div class="form-field">
-                    <p-button type="submit" label="Login" [loading]="loading()" styleClass="w-full"
-                        severity="primary" />
+                <div class="form-field mb-4">
+                    <p-button type="submit" label="Login" [loading]="loading()" styleClass="w-full" severity="info" />
                 </div>
             </form>
 
-            @if (showDemoCredentials()) {
             <ng-template pTemplate="footer">
+                @if (showDemoCredentials()) {
                 <div class="demo-credentials">
                     <p class="text-sm font-medium text-gray-700 mb-3">Demo Credentials:</p>
                     <div class="demo-buttons">
@@ -60,8 +63,8 @@
                             size="small" [outlined]="true" />
                     </div>
                 </div>
+                }
             </ng-template>
-            }
         </p-card>
     </div>
 </div>

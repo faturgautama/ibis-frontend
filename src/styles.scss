@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* TailwindCSS v4 */
-@import "tailwindcss";
+@use 'tailwindcss';
 
 /* PrimeNG Theme */
 @import 'primeicons/primeicons.css';
@@ -13,8 +13,12 @@
     box-sizing: border-box;
 }
 
+.html,
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Inter', sans-serif !important;
+    font-optical-sizing: auto;
+    font-feature-settings: 'liga', 'kern';
+    font-variation-settings: 'slnt' 0;
     background-color: #f9fafb;
     /* gray-50 */
     color: #111827;
@@ -28,4 +32,52 @@ body {
     body {
         font-family: 'Inter var', sans-serif;
     }
+}
+
+.p-accordionheader,
+.p-accordioncontent-content {
+    background-color: transparent !important;
+}
+
+textarea.p-inputtext-sm {
+    font-size: 14px;
+}
+
+.p-inputtext-sm .p-inputtext {
+    width: 100% !important;
+    font-size: 14px !important;
+}
+
+.p-inputtext-sm.text-end .p-inputtext {
+    width: 100% !important;
+    font-size: 14px !important;
+    text-align: right !important;
+}
+
+.p-inputtext-sm .p-inputnumber {
+    width: 100% !important;
+}
+
+p-inputnumber,
+.p-inputnumber {
+    width: 100% !important;
+}
+
+.p-dropdown.p-inputtext-sm {
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+.p-dropdown-item {
+    font-size: 14px !important;
+}
+
+p-select.p-inputtext-sm {
+    width: 100% !important;
+    padding: 0 !important;
+}
+
+p-datepicker,
+p-inputnumber {
+    padding: 0 !important;
 }

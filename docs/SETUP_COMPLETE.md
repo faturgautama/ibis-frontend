@@ -1,4 +1,4 @@
-# KEK IT Inventory - Setup Complete ✅
+# IBIS - Integrated Bonded Inventory System - Setup Complete ✅
 
 ## Installed Libraries
 

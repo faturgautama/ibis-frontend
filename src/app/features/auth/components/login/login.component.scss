@@ -3,57 +3,76 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     padding: 1rem;
 }
 
 .login-card-wrapper {
     width: 100%;
-    max-width: 450px;
+    max-width: 450px; // Requirement 3.1: Maximum card width for optimal readability
 
     ::ng-deep .p-card {
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        border-radius: 0.75rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); // Requirement 3.3: Appropriate shadow for depth
+        border-radius: 0.75rem; // Requirement 3.3: Rounded corners for modern look
+        overflow: hidden; // Ensure header background doesn't overflow rounded corners
     }
 
     ::ng-deep .p-card-body {
-        padding: 2rem;
+        padding: 2rem; // Consistent padding for card content
     }
 }
 
 .login-header {
     text-align: center;
-    padding: 2rem 2rem 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 2rem 1.5rem;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
     color: white;
     border-radius: 0.75rem 0.75rem 0 0;
     margin: -1rem -1rem 0;
 
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .logo-image {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        }
+    }
+
     h1 {
         color: white;
         margin: 0;
+        letter-spacing: 0.1em;
+        font-weight: 700;
     }
 
     p {
         color: rgba(255, 255, 255, 0.9);
+        font-size: 0.875rem;
     }
 }
 
 .form-field {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem; // Requirement 3.2: Consistent spacing between form elements
 
     &:last-child {
-        margin-bottom: 0;
+        margin-bottom: 0; // Remove margin from last field to prevent extra space
     }
 
     label {
         display: block;
         margin-bottom: 0.5rem;
+        color: #0f172a; // slate-900 for strong text contrast
     }
 
     small {
         display: block;
-        margin-top: 0.25rem;
+        margin-top: 0.25rem; // Requirement 5.1: Consistent error message spacing
+        color: #dc2626; // red-600 for error messages
     }
 }
 
@@ -66,9 +85,10 @@
     }
 
     .demo-buttons {
+        margin-top: 1rem;
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
+        gap: 1rem;
         justify-content: center;
     }
 }
@@ -82,8 +102,53 @@
         }
     }
 
+    // Input border colors - slate-300
+    .p-inputtext {
+        border-color: #cbd5e1;
+
+        // Focus state - blue-500
+        &:enabled:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+    }
+
+    // Error state - red-500
     .p-inputtext.ng-invalid.ng-touched,
     .p-password.ng-invalid.ng-touched input {
         border-color: #ef4444;
+
+        &:enabled:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+        }
+    }
+
+    // Primary button - blue-600
+    .p-button.p-button-primary {
+        background-color: #2563eb;
+        border-color: #2563eb;
+
+        &:enabled:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        &:enabled:active {
+            background-color: #1e40af;
+            border-color: #1e40af;
+        }
+    }
+
+    // Secondary/outlined buttons for demo credentials
+    .p-button.p-button-outlined {
+        color: #475569;
+        border-color: #cbd5e1;
+
+        &:enabled:hover {
+            background-color: #f8fafc;
+            color: #1e293b;
+            border-color: #94a3b8;
+        }
     }
 }

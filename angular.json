@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "kek-it-inventory": {
+    "ibis-inventory": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -78,13 +78,13 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "kek-it-inventory:build:production"
+              "buildTarget": "ibis-inventory:build:production"
             },
             "demo": {
-              "buildTarget": "kek-it-inventory:build:demo"
+              "buildTarget": "ibis-inventory:build:demo"
             },
             "development": {
-              "buildTarget": "kek-it-inventory:build:development"
+              "buildTarget": "ibis-inventory:build:development"
             }
           },
           "defaultConfiguration": "development"

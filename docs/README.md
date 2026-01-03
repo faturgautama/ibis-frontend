@@ -1,6 +1,6 @@
-# KEK IT Inventory - Documentation
+# IBIS - Integrated Bonded Inventory System - Documentation
 
-Dokumentasi lengkap untuk KEK IT Inventory System.
+Dokumentasi lengkap untuk IBIS (Integrated Bonded Inventory System).
 
 ## 📑 Table of Contents
 
