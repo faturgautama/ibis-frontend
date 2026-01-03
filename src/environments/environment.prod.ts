@@ -8,6 +8,7 @@ export const environment = {
     production: true,
     demoMode: false,
     apiUrl: 'https://api.kek-inventory.com',
+    ceisaApiUrl: 'https://ceisa.beacukai.go.id',
     apiTimeout: 30000,
     features: {
         rfidScanner: true,

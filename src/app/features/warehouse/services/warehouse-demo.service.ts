@@ -32,6 +32,13 @@ export class WarehouseDemoService extends DataProvider<Warehouse> {
     }
 
     /**
+     * Alias for getAll() - for compatibility
+     */
+    getAllWarehouses(): Observable<Warehouse[]> {
+        return this.getAll();
+    }
+
+    /**
      * Get warehouse by ID
      */
     getById(id: string): Observable<Warehouse> {
