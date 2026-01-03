@@ -1,8 +1,34 @@
-# Implementation Plan: KEK Inventory Traceability
+# Implementation Plan: IBIS Inventory Traceability
 
 ## Overview
 
-Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone components, NgRx untuk state management, PrimeNG untuk UI components, dan TailwindCSS untuk styling. Sistem akan mendukung dual-mode operation (demo mode dengan localStorage dan production mode dengan API backend) serta advanced features untuk enterprise usage.
+Implementasi sistem IBIS (Integrated Bonded Inventory System) menggunakan Angular 20 dengan standalone components, NgRx untuk state management, PrimeNG untuk UI components, dan TailwindCSS untuk styling. Sistem akan mendukung dual-mode operation (demo mode dengan localStorage dan production mode dengan API backend) serta advanced features untuk enterprise usage.
+
+## Styling Guidelines
+
+**IMPORTANT**: Untuk semua komponen baru (Task 3 dan seterusnya):
+
+- **Gunakan Tailwind CSS inline styling** di template HTML
+- **JANGAN buat file .scss terpisah** untuk komponen baru
+- Gunakan utility classes Tailwind untuk semua styling needs
+- Hanya gunakan component SCSS jika benar-benar diperlukan untuk styling yang sangat kompleks atau custom
+- Komponen yang sudah ada (auth/login) tetap menggunakan SCSS yang sudah ada
+
+**Contoh Styling Approach:**
+
+```html
+<!-- ✅ GOOD: Tailwind inline -->
+<div class="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
+  <h2 class="text-xl font-semibold text-gray-900">Title</h2>
+  <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Action</button>
+</div>
+
+<!-- ❌ AVOID: Separate SCSS file -->
+<div class="custom-container">
+  <h2 class="custom-title">Title</h2>
+  <button class="custom-button">Action</button>
+</div>
+```
 
 ## Tasks
 
@@ -53,16 +79,16 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Test token refresh mechanism
     - _Requirements: 1.1, 1.2, 1.5_
 
-- [ ] 3. Implement Master Data - Items Module
+- [x] 3. Implement Master Data - Items Module
 
-  - [ ] 3.1 Create item models and enums
+  - [x] 3.1 Create item models and enums
 
     - Define Item interface with all required fields
     - Define ItemType enum (RAW, WIP, FG, ASSET)
     - Define FacilityStatus enum (FASILITAS, NON)
     - _Requirements: 2.2, 2.4_
 
-  - [ ] 3.2 Implement InventoryDemoService
+  - [x] 3.2 Implement InventoryDemoService
 
     - Implement CRUD operations using localStorage
     - Implement data validation (HS Code format, required fields)
@@ -71,7 +97,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Initialize demo data on first load
     - _Requirements: 2.1, 2.2, 2.3, 2.5_
 
-  - [ ] 3.3 Implement InventoryApiService (Production Mode)
+  - [x] 3.3 Implement InventoryApiService (Production Mode)
 
     - Implement CRUD operations with HTTP client
     - Implement error handling and retry logic
@@ -80,7 +106,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement getExpiringItems() API call
     - _Requirements: 2.1, 2.5, 14.2, 14.3_
 
-  - [ ] 3.4 Write property tests for item operations
+  - [x] 3.4 Write property tests for item operations
 
     - **Property 4: Item CRUD Operations**
     - **Property 5: Item Required Fields Validation**
@@ -90,7 +116,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - **Property 9: Item Deletion Prevention with History**
     - **Validates: Requirements 2.1, 2.2, 2.3, 2.5, 2.9, 2.10**
 
-  - [ ] 3.5 Setup NgRx store for inventory
+  - [x] 3.5 Setup NgRx store for inventory
 
     - Create inventory state interface
     - Create inventory actions (load, create, update, delete)
@@ -98,9 +124,10 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Create inventory selectors (selectAllItems, selectLowStockItems)
     - _Requirements: 2.1_
 
-  - [ ] 3.6 Create item list component
+  - [x] 3.6 Create item list component
 
     - Create data table with PrimeNG Table
+    - **Use Tailwind CSS inline styling** (no separate .scss file)
     - Implement pagination (50 items per page)
     - Implement filtering and search
     - Add action buttons (create, edit, delete)
@@ -108,9 +135,10 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement RFID scanner integration (production mode)
     - _Requirements: 2.1, 2.9, 7.8, 23.3_
 
-  - [ ] 3.7 Create item form component
+  - [x] 3.7 Create item form component
 
     - Create form with all item fields
+    - **Use Tailwind CSS inline styling** (no separate .scss file)
     - Implement form validation
     - Implement HS Code format validation
     - Add image upload functionality
@@ -118,7 +146,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement barcode scanner integration
     - _Requirements: 2.2, 2.3, 2.7, 2.8_
 
-  - [ ] 3.8 Write unit tests for item components
+  - [x] 3.8 Write unit tests for item components
     - Test item list rendering
     - Test item form validation
     - Test CRUD operations
@@ -129,7 +157,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
 
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Implement Master Data - Warehouses Module
+- [-] 5. Implement Master Data - Warehouses Module
 
   - [ ] 5.1 Create warehouse models and enums
 
@@ -151,7 +179,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement utilization calculation
     - _Requirements: 3.1, 3.4_
 
-  - [ ] 5.4 Write property tests for warehouse operations
+  - [ ]\* 5.4 Write property tests for warehouse operations
 
     - **Property 10: Warehouse Required Fields Validation**
     - **Property 11: Bonded Warehouse License Validation**
@@ -161,12 +189,13 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
   - [ ] 5.5 Create warehouse list and form components
 
     - Create warehouse list with data table
+    - **Use Tailwind CSS inline styling** (no separate .scss file)
     - Create warehouse form with validation
     - Display license expiry alerts
     - Display capacity and utilization metrics
     - _Requirements: 3.1, 3.2, 3.4, 3.6_
 
-  - [ ] 5.6 Write unit tests for warehouse components
+  - [ ]\* 5.6 Write unit tests for warehouse components
     - Test warehouse form validation
     - Test license expiry alerts
     - Test capacity calculations
@@ -195,11 +224,12 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
   - [ ] 6.4 Create supplier and customer list/form components
 
     - Create list components with data tables
+    - **Use Tailwind CSS inline styling** (no separate .scss file)
     - Create form components with validation
     - Implement NPWP validation UI
     - _Requirements: 4.1, 4.2, 4.3_
 
-  - [ ] 6.5 Write unit tests for supplier/customer components
+  - [ ]\* 6.5 Write unit tests for supplier/customer components
     - Test NPWP validation
     - Test active/inactive toggle
     - _Requirements: 4.3, 4.4_
@@ -236,7 +266,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement CEISA submission UI
     - _Requirements: 5.1, 5.4, 5.5, 15.2_
 
-  - [ ] 7.5 Write unit tests for BC document components
+  - [ ]\* 7.5 Write unit tests for BC document components
     - Test document workflow
     - Test file upload
     - Test CEISA integration
@@ -263,7 +293,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement RFID-based tracking (production mode)
     - _Requirements: 7.1, 7.2, 7.3, 7.8_
 
-  - [ ] 9.3 Write property tests for stock balance
+  - [ ]\* 9.3 Write property tests for stock balance
 
     - **Property 20: Real-Time Stock Balance Update**
     - **Property 21: Expiring Items Detection**
@@ -278,7 +308,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement RFID scanner integration
     - _Requirements: 7.1, 7.4, 7.5, 7.6, 7.7, 7.8_
 
-  - [ ] 9.5 Write unit tests for stock balance components
+  - [ ]\* 9.5 Write unit tests for stock balance components
     - Test balance calculations
     - Test alert generation
     - Test RFID integration
@@ -311,7 +341,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement retry mechanism for failed syncs
     - _Requirements: 6.1, 6.3, 14.1, 14.2, 14.6_
 
-  - [ ] 10.4 Write property tests for inbound operations
+  - [ ]\* 10.4 Write property tests for inbound operations
 
     - **Property 13: Inbound BC Document Reference Validation**
     - **Property 14: Inbound HS Code and Unit Validation**
@@ -331,7 +361,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Display IT Inventory sync status
     - _Requirements: 6.4, 6.5, 6.7, 6.9, 14.8_
 
-  - [ ] 10.6 Write unit tests for inbound components
+  - [ ]\* 10.6 Write unit tests for inbound components
     - Test inbound form validation
     - Test quality status workflow
     - Test IT Inventory sync UI
@@ -352,7 +382,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement same warehouse prevention
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-  - [ ] 11.3 Write property tests for stock mutation
+  - [ ]\* 11.3 Write property tests for stock mutation
 
     - **Property 22: Stock Mutation Required Fields Validation**
     - **Property 23: Stock Mutation Sufficient Stock Validation**
@@ -368,7 +398,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Add reason field
     - _Requirements: 8.1, 8.2, 8.6_
 
-  - [ ] 11.5 Write unit tests for stock mutation components
+  - [ ]\* 11.5 Write unit tests for stock mutation components
     - Test mutation form validation
     - Test stock availability checks
     - _Requirements: 8.2, 8.3_
@@ -403,7 +433,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement batch production support
     - _Requirements: 9.1, 9.4, 14.1, 14.4_
 
-  - [ ] 13.4 Write property tests for production operations
+  - [ ]\* 13.4 Write property tests for production operations
 
     - **Property 27: Production Order Required Fields Validation**
     - **Property 28: Production Stock Update**
@@ -423,7 +453,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Display IT Inventory sync status
     - _Requirements: 9.1, 9.2, 9.7, 9.8, 9.9, 9.10, 14.8_
 
-  - [ ] 13.6 Write unit tests for production components
+  - [ ]\* 13.6 Write unit tests for production components
     - Test work order form validation
     - Test material selection
     - Test yield calculation display
@@ -455,7 +485,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement real-time sync status tracking
     - _Requirements: 10.1, 10.3, 14.1, 14.3_
 
-  - [ ] 14.4 Write property tests for outbound operations
+  - [ ]\* 14.4 Write property tests for outbound operations
 
     - **Property 35: Outbound Stock Decrease**
     - **Property 36: Outbound Sufficient Stock Validation**
@@ -494,7 +524,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement reason requirement for differences
     - _Requirements: 11.1, 11.2, 11.4, 11.5, 11.7, 11.10_
 
-  - [ ] 15.3 Write property tests for stock opname
+  - [ ]\* 15.3 Write property tests for stock opname
 
     - **Property 39: Stock Opname Required Fields Validation**
     - **Property 40: Stock Opname Difference Calculation**
@@ -513,7 +543,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Generate opname report
     - _Requirements: 11.1, 11.2, 11.3, 11.9_
 
-  - [ ] 15.5 Write unit tests for stock opname components
+  - [ ]\* 15.5 Write unit tests for stock opname components
     - Test opname form validation
     - Test difference calculations
     - Test approval workflow
@@ -539,7 +569,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement export functionality
     - _Requirements: 12.1, 12.2, 12.3, 12.5, 12.7_
 
-  - [ ] 17.3 Write property tests for audit trail
+  - [ ]\* 17.3 Write property tests for audit trail
 
     - **Property 45: Audit Log Creation for All Changes**
     - **Property 46: Audit Log Data Completeness**
@@ -554,7 +584,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement export to Excel/PDF
     - _Requirements: 12.5, 12.6, 12.7_
 
-  - [ ] 17.5 Write unit tests for audit trail components
+  - [ ]\* 17.5 Write unit tests for audit trail components
     - Test audit log filtering
     - Test data comparison display
     - Test export functionality
@@ -571,7 +601,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement RFID-based traceability (production mode)
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.7_
 
-  - [ ] 18.2 Write property tests for traceability
+  - [ ]\* 18.2 Write property tests for traceability
 
     - **Property 48: Traceability Link Maintenance**
     - **Property 49: Forward Traceability - FG to Raw Materials**
@@ -590,7 +620,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement RFID scanner integration
     - _Requirements: 13.1, 13.2, 13.3, 13.6, 13.7, 13.8_
 
-  - [ ] 18.4 Write unit tests for traceability components
+  - [ ]\* 18.4 Write unit tests for traceability components
     - Test traceability chain display
     - Test forward/backward navigation
     - Test RFID integration
@@ -624,7 +654,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Display sync queue and failed syncs
     - _Requirements: 14.8, 14.9, 15.2, 15.6_
 
-  - [ ] 19.4 Write unit tests for customs integration
+  - [ ]\* 19.4 Write unit tests for customs integration
     - Test IT Inventory sync
     - Test CEISA submission
     - Test retry mechanism
@@ -655,7 +685,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement auto-refresh every 5 minutes
     - _Requirements: 16.1, 16.2, 16.3, 16.4, 16.5, 16.6, 16.7, 16.8, 16.9_
 
-  - [ ] 20.3 Write unit tests for dashboard components
+  - [ ]\* 20.3 Write unit tests for dashboard components
     - Test metrics calculations
     - Test chart rendering
     - Test auto-refresh
@@ -687,7 +717,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Display report history
     - _Requirements: 17.1-17.10_
 
-  - [ ] 21.3 Write unit tests for reporting module
+  - [ ]\* 21.3 Write unit tests for reporting module
     - Test report generation
     - Test export functionality
     - Test scheduling
@@ -712,7 +742,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Implement sound notifications for critical alerts
     - _Requirements: 18.6, 18.7, 18.8_
 
-  - [ ] 22.3 Write unit tests for alerts & notifications
+  - [ ]\* 22.3 Write unit tests for alerts & notifications
     - Test alert generation
     - Test severity filtering
     - Test email notifications
@@ -737,7 +767,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Display user activity logs
     - _Requirements: 19.1, 19.2, 19.3, 19.7, 19.8_
 
-  - [ ] 23.3 Write unit tests for user management
+  - [ ]\* 23.3 Write unit tests for user management
     - Test password validation
     - Test user CRUD operations
     - Test activity logging
@@ -764,7 +794,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Create report template configuration
     - _Requirements: 20.1-20.9_
 
-  - [ ] 24.3 Write unit tests for configuration
+  - [ ]\* 24.3 Write unit tests for configuration
     - Test configuration validation
     - Test mode switching
     - Test API configuration
@@ -789,7 +819,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Display import/export history
     - _Requirements: 21.1, 21.3, 21.4, 21.7_
 
-  - [ ] 25.3 Write unit tests for import/export
+  - [ ]\* 25.3 Write unit tests for import/export
     - Test Excel import validation
     - Test export functionality
     - Test bulk operations
@@ -817,7 +847,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Create file upload component
     - _Requirements: 22.1, 22.2, 23.3_
 
-  - [ ] 26.3 Write unit tests for layout components
+  - [ ]\* 26.3 Write unit tests for layout components
     - Test responsive behavior
     - Test role-based menu
     - Test theme switching
@@ -865,7 +895,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Display backup history
     - _Requirements: 25.1, 25.2, 25.3, 25.4, 25.5, 25.6, 25.7_
 
-  - [ ] 27.6 Write unit tests for advanced features
+  - [ ]\* 27.6 Write unit tests for advanced features
     - Test offline sync queue
     - Test WebSocket connections
     - Test advanced search
@@ -882,7 +912,7 @@ Implementasi sistem KEK IT Inventory menggunakan Angular 20 dengan standalone co
     - Setup route guards and resolvers
     - _Requirements: All_
 
-  - [ ] 28.2 Run comprehensive test suite
+  - [ ]\* 28.2 Run comprehensive test suite
 
     - Run all unit tests
     - Run all property-based tests (100 iterations each)
