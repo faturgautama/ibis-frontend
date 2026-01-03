@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { MainLayoutComponent } from './shared/components/main-layout/main-layout.component';
+import { DashboardLayoutComponent } from './shared/components/dashboard-layout/dashboard-layout.component';
 
 /**
  * Application Routes
@@ -13,10 +13,10 @@ export const routes: Routes = [
         pathMatch: 'full'
     },
 
-    // Main application routes with layout
+    // Main application routes with new dashboard layout
     {
         path: '',
-        component: MainLayoutComponent,
+        component: DashboardLayoutComponent,
         children: [
             // Dashboard
             {

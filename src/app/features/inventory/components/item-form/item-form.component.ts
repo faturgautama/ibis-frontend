@@ -35,33 +35,33 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
  * Requirements: 2.2, 2.3, 2.7, 2.8
  */
 @Component({
-    selector: 'app-item-form',
-    standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        InputTextModule,
-        TextareaModule,
-        InputNumberModule,
-        SelectModule,
-        CheckboxModule,
-        ButtonModule,
-        FileUploadModule,
-        CardModule,
-        LucideAngularModule
-    ],
-    template: `
+  selector: 'app-item-form',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    TextareaModule,
+    InputNumberModule,
+    SelectModule,
+    CheckboxModule,
+    ButtonModule,
+    FileUploadModule,
+    CardModule,
+    LucideAngularModule
+  ],
+  template: `
     <div class="p-6 max-w-5xl mx-auto">
       <!-- Page Header -->
       <div class="mb-6">
         <div class="flex items-center gap-2 mb-2">
           <lucide-icon [img]="PackageIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
           <h1 class="text-2xl font-semibold text-gray-900">
-            {{ isEditMode ? 'Edit Item' : 'Create New Item' }}
+            {{ pageTitle }}
           </h1>
         </div>
         <p class="text-sm text-gray-600">
-          {{ isEditMode ? 'Update item information' : 'Add a new item to your inventory' }}
+          {{ pageDescription }}
         </p>
       </div>
 
@@ -86,10 +86,10 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
                   formControlName="item_code"
                   placeholder="e.g., RM-001"
                   class="w-full"
-                  [class.ng-invalid]="itemForm.get('item_code')?.invalid && itemForm.get('item_code')?.touched"
+                  [class.ng-invalid]="isItemCodeInvalid"
                 />
                 <small
-                  *ngIf="itemForm.get('item_code')?.invalid && itemForm.get('item_code')?.touched"
+                  *ngIf="isItemCodeInvalid"
                   class="text-red-500 text-xs mt-1"
                 >
                   Item code is required
@@ -108,10 +108,10 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
                   formControlName="item_name"
                   placeholder="e.g., Steel Plate A36"
                   class="w-full"
-                  [class.ng-invalid]="itemForm.get('item_name')?.invalid && itemForm.get('item_name')?.touched"
+                  [class.ng-invalid]="isItemNameInvalid"
                 />
                 <small
-                  *ngIf="itemForm.get('item_name')?.invalid && itemForm.get('item_name')?.touched"
+                  *ngIf="isItemNameInvalid"
                   class="text-red-500 text-xs mt-1"
                 >
                   Item name is required
@@ -131,16 +131,16 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
                   placeholder="e.g., 7208390000"
                   maxlength="10"
                   class="w-full font-mono"
-                  [class.ng-invalid]="itemForm.get('hs_code')?.invalid && itemForm.get('hs_code')?.touched"
+                  [class.ng-invalid]="isHsCodeInvalid"
                 />
                 <small
-                  *ngIf="itemForm.get('hs_code')?.hasError('required') && itemForm.get('hs_code')?.touched"
+                  *ngIf="hasHsCodeRequiredError"
                   class="text-red-500 text-xs mt-1"
                 >
                   HS Code is required
                 </small>
                 <small
-                  *ngIf="itemForm.get('hs_code')?.hasError('pattern') && itemForm.get('hs_code')?.touched"
+                  *ngIf="hasHsCodePatternError"
                   class="text-red-500 text-xs mt-1"
                 >
                   HS Code must be exactly 10 digits
@@ -158,10 +158,10 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
                   formControlName="item_type"
                   placeholder="Select item type"
                   styleClass="w-full"
-                  [class.ng-invalid]="itemForm.get('item_type')?.invalid && itemForm.get('item_type')?.touched"
+                  [class.ng-invalid]="isItemTypeInvalid"
                 ></p-select>
                 <small
-                  *ngIf="itemForm.get('item_type')?.invalid && itemForm.get('item_type')?.touched"
+                  *ngIf="isItemTypeInvalid"
                   class="text-red-500 text-xs mt-1"
                 >
                   Item type is required
@@ -180,10 +180,10 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
                   placeholder="Select unit"
                   [editable]="true"
                   styleClass="w-full"
-                  [class.ng-invalid]="itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched"
+                  [class.ng-invalid]="isUnitInvalid"
                 ></p-select>
                 <small
-                  *ngIf="itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched"
+                  *ngIf="isUnitInvalid"
                   class="text-red-500 text-xs mt-1"
                 >
                   Unit is required
@@ -462,9 +462,9 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
               <small class="text-gray-500 text-xs mt-1">
                 Maximum file size: 2MB. Supported formats: JPG, PNG, GIF
               </small>
-              <div *ngIf="itemForm.get('image_url')?.value" class="mt-3">
+              <div *ngIf="hasImageUrl" class="mt-3">
                 <img
-                  [src]="itemForm.get('image_url')?.value"
+                  [src]="imageUrl"
                   alt="Item image"
                   class="w-32 h-32 object-cover rounded-lg border border-gray-200"
                 />
@@ -485,7 +485,7 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
             <button
               type="submit"
               pButton
-              [label]="isEditMode ? 'Update Item' : 'Create Item'"
+              [label]="submitButtonLabel"
               icon="pi pi-check"
               [loading]="(loading$ | async) || false"
               [disabled]="itemForm.invalid"
@@ -497,181 +497,320 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
   `
 })
 export class ItemFormComponent implements OnInit {
-    private fb = inject(FormBuilder);
-    private store = inject(Store);
-    private router = inject(Router);
-    private route = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
+  private store = inject(Store);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-    // Icons
-    PackageIcon = Package;
-    SaveIcon = Save;
-    XIcon = X;
-    UploadIcon = Upload;
+  // Icons
+  PackageIcon = Package;
+  SaveIcon = Save;
+  XIcon = X;
+  UploadIcon = Upload;
 
-    // Form
-    itemForm!: FormGroup;
-    isEditMode = false;
-    itemId: string | null = null;
+  // Form
+  itemForm!: FormGroup;
+  isEditMode = false;
+  itemId: string | null = null;
 
-    // Observables
-    loading$: Observable<boolean>;
+  // Observables
+  loading$: Observable<boolean>;
 
-    // Dropdown options
-    itemTypeOptions = [
-        { label: 'Raw Material', value: ItemType.RAW },
-        { label: 'Work In Progress', value: ItemType.WIP },
-        { label: 'Finished Goods', value: ItemType.FG },
-        { label: 'Asset', value: ItemType.ASSET }
-    ];
+  // Dropdown options
+  itemTypeOptions = [
+    { label: 'Raw Material', value: ItemType.RAW },
+    { label: 'Work In Progress', value: ItemType.WIP },
+    { label: 'Finished Goods', value: ItemType.FG },
+    { label: 'Asset', value: ItemType.ASSET }
+  ];
 
-    facilityStatusOptions = [
-        { label: 'Fasilitas (Bonded)', value: FacilityStatus.FASILITAS },
-        { label: 'Non-Fasilitas', value: FacilityStatus.NON }
-    ];
+  facilityStatusOptions = [
+    { label: 'Fasilitas (Bonded)', value: FacilityStatus.FASILITAS },
+    { label: 'Non-Fasilitas', value: FacilityStatus.NON }
+  ];
 
-    unitOptions = [
-        { label: 'Pieces (pcs)', value: 'pcs' },
-        { label: 'Kilogram (kg)', value: 'kg' },
-        { label: 'Meter (m)', value: 'm' },
-        { label: 'Liter (liter)', value: 'liter' },
-        { label: 'Box (box)', value: 'box' }
-    ];
+  unitOptions = [
+    { label: 'Pieces (pcs)', value: 'pcs' },
+    { label: 'Kilogram (kg)', value: 'kg' },
+    { label: 'Meter (m)', value: 'm' },
+    { label: 'Liter (liter)', value: 'liter' },
+    { label: 'Box (box)', value: 'box' }
+  ];
 
-    currencyOptions = [
-        { label: 'IDR - Indonesian Rupiah', value: 'IDR' },
-        { label: 'USD - US Dollar', value: 'USD' },
-        { label: 'EUR - Euro', value: 'EUR' },
-        { label: 'SGD - Singapore Dollar', value: 'SGD' }
-    ];
+  currencyOptions = [
+    { label: 'IDR - Indonesian Rupiah', value: 'IDR' },
+    { label: 'USD - US Dollar', value: 'USD' },
+    { label: 'EUR - Euro', value: 'EUR' },
+    { label: 'SGD - Singapore Dollar', value: 'SGD' }
+  ];
 
-    constructor() {
-        this.loading$ = this.store.select(selectInventoryLoading);
-        this.initializeForm();
+  constructor() {
+    this.loading$ = this.store.select(selectInventoryLoading);
+    this.initializeForm();
+  }
+
+  ngOnInit(): void {
+    // Check if we're in edit mode
+    this.itemId = this.route.snapshot.paramMap.get('id');
+    this.isEditMode = !!this.itemId;
+
+    if (this.isEditMode && this.itemId) {
+      this.loadItemForEditing(this.itemId);
     }
+  }
 
-    ngOnInit(): void {
-        // Check if we're in edit mode
-        this.itemId = this.route.snapshot.paramMap.get('id');
-        this.isEditMode = !!this.itemId;
+  /**
+   * Computed property: Get page title based on mode
+   */
+  get pageTitle(): string {
+    return this.isEditMode ? 'Edit Item' : 'Create New Item';
+  }
 
-        if (this.isEditMode && this.itemId) {
-            // Load item data for editing
-            this.store.dispatch(InventoryActions.loadItem({ id: this.itemId }));
+  /**
+   * Computed property: Get page description based on mode
+   */
+  get pageDescription(): string {
+    return this.isEditMode ? 'Update item information' : 'Add a new item to your inventory';
+  }
 
-            // Subscribe to selected item and populate form
-            this.store
-                .select(selectSelectedItem)
-                .pipe(
-                    filter(item => !!item),
-                    take(1)
-                )
-                .subscribe(item => {
-                    if (item) {
-                        this.populateForm(item);
-                    }
-                });
+  /**
+   * Computed property: Get submit button label based on mode
+   */
+  get submitButtonLabel(): string {
+    return this.isEditMode ? 'Update Item' : 'Create Item';
+  }
+
+  /**
+   * Computed property: Check if item code field is invalid and touched
+   */
+  get isItemCodeInvalid(): boolean {
+    return this.isFieldInvalid('item_code');
+  }
+
+  /**
+   * Computed property: Check if item name field is invalid and touched
+   */
+  get isItemNameInvalid(): boolean {
+    return this.isFieldInvalid('item_name');
+  }
+
+  /**
+   * Computed property: Check if HS code field is invalid and touched
+   */
+  get isHsCodeInvalid(): boolean {
+    return this.isFieldInvalid('hs_code');
+  }
+
+  /**
+   * Computed property: Check if HS code has required error
+   */
+  get hasHsCodeRequiredError(): boolean {
+    return this.hasFieldError('hs_code', 'required');
+  }
+
+  /**
+   * Computed property: Check if HS code has pattern error
+   */
+  get hasHsCodePatternError(): boolean {
+    return this.hasFieldError('hs_code', 'pattern');
+  }
+
+  /**
+   * Computed property: Check if item type field is invalid and touched
+   */
+  get isItemTypeInvalid(): boolean {
+    return this.isFieldInvalid('item_type');
+  }
+
+  /**
+   * Computed property: Check if unit field is invalid and touched
+   */
+  get isUnitInvalid(): boolean {
+    return this.isFieldInvalid('unit');
+  }
+
+  /**
+   * Computed property: Check if image URL exists
+   */
+  get hasImageUrl(): boolean {
+    return !!this.itemForm.get('image_url')?.value;
+  }
+
+  /**
+   * Computed property: Get image URL value
+   */
+  get imageUrl(): string {
+    return this.itemForm.get('image_url')?.value || '';
+  }
+
+  /**
+   * Check if a form field is invalid and touched
+   */
+  private isFieldInvalid(fieldName: string): boolean {
+    const field = this.itemForm.get(fieldName);
+    return !!(field?.invalid && field?.touched);
+  }
+
+  /**
+   * Check if a form field has a specific error
+   */
+  private hasFieldError(fieldName: string, errorType: string): boolean {
+    const field = this.itemForm.get(fieldName);
+    return !!(field?.hasError(errorType) && field?.touched);
+  }
+
+  /**
+   * Load item data for editing
+   */
+  private loadItemForEditing(itemId: string): void {
+    this.store.dispatch(InventoryActions.loadItem({ id: itemId }));
+
+    this.store
+      .select(selectSelectedItem)
+      .pipe(
+        filter(item => !!item),
+        take(1)
+      )
+      .subscribe(item => {
+        if (item) {
+          this.populateForm(item);
         }
+      });
+  }
+
+  /**
+   * Initialize the form with validators
+   */
+  private initializeForm(): void {
+    this.itemForm = this.fb.group({
+      item_code: ['', Validators.required],
+      item_name: ['', Validators.required],
+      hs_code: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      item_type: [null, Validators.required],
+      unit: ['', Validators.required],
+      facility_status: [FacilityStatus.FASILITAS, Validators.required],
+      description: [''],
+      brand: [''],
+      category_id: [''],
+      barcode: [''],
+      rfid_tag: [''],
+      min_stock: [null],
+      max_stock: [null],
+      reorder_point: [null],
+      lead_time_days: [null],
+      shelf_life_days: [null],
+      storage_condition: [''],
+      price: [null],
+      currency: ['IDR'],
+      is_hazardous: [false],
+      active: [true],
+      image_url: ['']
+    });
+  }
+
+  /**
+   * Populate form with item data
+   */
+  private populateForm(item: Item): void {
+    this.itemForm.patchValue({
+      item_code: item.item_code,
+      item_name: item.item_name,
+      hs_code: item.hs_code,
+      item_type: item.item_type,
+      unit: item.unit,
+      facility_status: item.facility_status,
+      description: item.description || '',
+      brand: item.brand || '',
+      category_id: item.category_id || '',
+      barcode: item.barcode || '',
+      rfid_tag: item.rfid_tag || '',
+      min_stock: item.min_stock || null,
+      max_stock: item.max_stock || null,
+      reorder_point: item.reorder_point || null,
+      lead_time_days: item.lead_time_days || null,
+      shelf_life_days: item.shelf_life_days || null,
+      storage_condition: item.storage_condition || '',
+      price: item.price || null,
+      currency: item.currency || 'IDR',
+      is_hazardous: item.is_hazardous,
+      active: item.active,
+      image_url: item.image_url || ''
+    });
+  }
+
+  /**
+   * Mark all form fields as touched to show validation errors
+   */
+  private markAllFieldsAsTouched(): void {
+    Object.keys(this.itemForm.controls).forEach(key => {
+      this.itemForm.get(key)?.markAsTouched();
+    });
+  }
+
+  /**
+   * Dispatch create or update action based on mode
+   */
+  private submitFormData(): void {
+    const formValue = this.itemForm.value;
+
+    if (this.isEditMode && this.itemId) {
+      const updateData: UpdateItemDto = { ...formValue };
+      this.store.dispatch(InventoryActions.updateItem({ id: this.itemId, item: updateData }));
+    } else {
+      const createData: CreateItemDto = { ...formValue };
+      this.store.dispatch(InventoryActions.createItem({ item: createData }));
+    }
+  }
+
+  /**
+   * Navigate back to items list
+   */
+  private navigateToItemsList(): void {
+    this.router.navigate(['/inventory/items']);
+  }
+
+  /**
+   * Handle form submission
+   */
+  onSubmit(): void {
+    if (this.itemForm.invalid) {
+      this.markAllFieldsAsTouched();
+      return;
     }
 
-    private initializeForm(): void {
-        this.itemForm = this.fb.group({
-            item_code: ['', Validators.required],
-            item_name: ['', Validators.required],
-            hs_code: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-            item_type: [null, Validators.required],
-            unit: ['', Validators.required],
-            facility_status: [FacilityStatus.FASILITAS, Validators.required],
-            description: [''],
-            brand: [''],
-            category_id: [''],
-            barcode: [''],
-            rfid_tag: [''],
-            min_stock: [null],
-            max_stock: [null],
-            reorder_point: [null],
-            lead_time_days: [null],
-            shelf_life_days: [null],
-            storage_condition: [''],
-            price: [null],
-            currency: ['IDR'],
-            is_hazardous: [false],
-            active: [true],
-            image_url: ['']
-        });
+    this.submitFormData();
+
+    // Navigate back to list after a short delay
+    setTimeout(() => {
+      this.navigateToItemsList();
+    }, 500);
+  }
+
+  /**
+   * Handle cancel button click
+   */
+  onCancel(): void {
+    this.navigateToItemsList();
+  }
+
+  /**
+   * Handle image upload
+   */
+  onImageUpload(event: any): void {
+    const file = event.files[0];
+    if (file) {
+      this.convertImageToDataUrl(file);
     }
+  }
 
-    private populateForm(item: Item): void {
-        this.itemForm.patchValue({
-            item_code: item.item_code,
-            item_name: item.item_name,
-            hs_code: item.hs_code,
-            item_type: item.item_type,
-            unit: item.unit,
-            facility_status: item.facility_status,
-            description: item.description || '',
-            brand: item.brand || '',
-            category_id: item.category_id || '',
-            barcode: item.barcode || '',
-            rfid_tag: item.rfid_tag || '',
-            min_stock: item.min_stock || null,
-            max_stock: item.max_stock || null,
-            reorder_point: item.reorder_point || null,
-            lead_time_days: item.lead_time_days || null,
-            shelf_life_days: item.shelf_life_days || null,
-            storage_condition: item.storage_condition || '',
-            price: item.price || null,
-            currency: item.currency || 'IDR',
-            is_hazardous: item.is_hazardous,
-            active: item.active,
-            image_url: item.image_url || ''
-        });
-    }
-
-    onSubmit(): void {
-        if (this.itemForm.invalid) {
-            // Mark all fields as touched to show validation errors
-            Object.keys(this.itemForm.controls).forEach(key => {
-                this.itemForm.get(key)?.markAsTouched();
-            });
-            return;
-        }
-
-        const formValue = this.itemForm.value;
-
-        if (this.isEditMode && this.itemId) {
-            // Update existing item
-            const updateData: UpdateItemDto = {
-                ...formValue
-            };
-            this.store.dispatch(InventoryActions.updateItem({ id: this.itemId, item: updateData }));
-        } else {
-            // Create new item
-            const createData: CreateItemDto = {
-                ...formValue
-            };
-            this.store.dispatch(InventoryActions.createItem({ item: createData }));
-        }
-
-        // Navigate back to list after a short delay
-        setTimeout(() => {
-            this.router.navigate(['/inventory/items']);
-        }, 500);
-    }
-
-    onCancel(): void {
-        this.router.navigate(['/inventory/items']);
-    }
-
-    onImageUpload(event: any): void {
-        // In a real application, this would upload to a server
-        // For demo purposes, we'll use a data URL
-        const file = event.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e: any) => {
-                this.itemForm.patchValue({ image_url: e.target.result });
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+  /**
+   * Convert uploaded image file to data URL
+   */
+  private convertImageToDataUrl(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.itemForm.patchValue({ image_url: e.target.result });
+    };
+    reader.readAsDataURL(file);
+  }
 }

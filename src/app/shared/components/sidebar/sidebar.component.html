@@ -1,0 +1,47 @@
+<div class="flex flex-col bg-white h-screen border-r border-y-0 border-l-0 border-gray-200 border-solid transition-all duration-300"
+    [ngClass]="sidebarWidthClass">
+    <!-- Brand Section -->
+    <div class="flex flex-row gap-2 items-center p-5 border-b border-t-0 border-x-0 border-solid border-gray-300">
+        <div *ngIf="isExpanded" class="flex items-center gap-2 mr-auto">
+            <i class="pi pi-box text-2xl text-blue-600"></i>
+            <span class="text-blue-700 font-bold text-base leading-4">
+                IBIS
+                <br>
+                <span class="text-xs font-medium text-gray-600">Integrated Bonded Inventory System</span>
+            </span>
+        </div>
+
+        <p-button [rounded]="true" severity="secondary" [icon]="toggleIcon" styleClass="p-button-sm"
+            (onClick)="handleToggleSidebar()"></p-button>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="flex flex-col w-full px-4 py-5 flex-1 overflow-y-auto">
+        <p *ngIf="isExpanded" class="text-sm text-gray-400 mb-4 px-2">Main Menu</p>
+
+        <div *ngFor="let item of menuItems"
+            class="flex flex-row gap-3 w-full items-center mb-3 p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+            [ngClass]="menuAlignmentClass" [class.bg-blue-100]="isActive(item.route)" (click)="handleClickMenu(item)">
+            <span class="text-gray-700">
+                <i [class]="item.icon"></i>
+            </span>
+            <p *ngIf="isExpanded" class="text-sm text-gray-700 mb-0">
+                {{ item.label }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="flex flex-col w-full px-4 py-5 border-t border-b-0 border-x-0 border-solid border-gray-300">
+        <p *ngIf="isExpanded" class="text-sm text-gray-400 mb-4 px-2">Others</p>
+
+        <div class="flex flex-row gap-3 w-full items-center p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+            [ngClass]="menuAlignmentClass" [class.bg-blue-100]="isActive('/configuration')"
+            (click)="handleClickSettings()">
+            <span class="text-gray-700">
+                <i class="pi pi-cog"></i>
+            </span>
+            <p *ngIf="isExpanded" class="text-sm text-gray-700 mb-0">Settings</p>
+        </div>
+    </div>
+</div>

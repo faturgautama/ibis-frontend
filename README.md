@@ -2,24 +2,66 @@
 
 Sistem Informasi Inventory Kawasan Berikat dengan integrasi Bea Cukai dan Traceability System.
 
-## 📚 Documentation
+## Overview
 
-Dokumentasi lengkap tersedia di folder `docs/`:
+IBIS adalah aplikasi manajemen inventory untuk kawasan berikat yang terintegrasi dengan sistem Bea Cukai Indonesia (IT Inventory & CEISA) dan dilengkapi dengan sistem traceability menggunakan RFID dan batch tracking.
 
-- **[Setup Complete](docs/SETUP_COMPLETE.md)** - Installation status dan technology stack
-- **[Folder Structure](docs/FOLDER_STRUCTURE.md)** - Project architecture dan folder organization
+## Features
 
-## 🚀 Quick Start
+- **Inventory Management** - Manajemen item, warehouse, stock balance, dan stock mutation
+- **Purchasing & Warehouse** - Inbound, outbound, dan stock opname operations
+- **Production & Quality Control** - Work orders, material consumption, dan yield tracking
+- **Customs Integration** - BC documents (BC23, BC25, BC27, BC30, BC40) dan sinkronisasi IT Inventory
+- **CEISA Integration** - Submission tracking dan approval status monitoring
+- **Traceability System** - Forward/backward tracing dengan RFID dan batch tracking
+- **Reports & Analytics** - Dashboard analytics, scheduled reports, dan export capabilities
+- **Audit Trail** - Complete change tracking dan user activity logs
+- **User Management** - Role-based access control dan user administration
 
-### Development Mode (Demo - LocalStorage)
+## Technology Stack
+
+- **Angular** 20.3.0 - Modern frontend framework dengan standalone components
+- **TypeScript** 5.9.2 - Type-safe programming language
+- **PrimeNG** 20.4.0 - Enterprise UI component library
+- **TailwindCSS** 4.1.12 - Utility-first CSS framework
+- **NgRx** 20.1.0 - State management dengan Redux pattern
+- **Lucide Angular** 0.562.0 - Icon library (1,555+ icons)
+- **Chart.js** 4.5.1 - Data visualization untuk dashboard
+
+## Prerequisites
+
+- Node.js 18.x atau lebih tinggi
+- npm 9.x atau lebih tinggi
+- Angular CLI 20.3.10
+
+## Installation
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd kek-it-inventory
+
+# Install dependencies
+npm install
+```
+
+## Development
+
+### Development Server
+
+Jalankan development server dengan LocalStorage (demo mode):
 
 ```bash
 npm start
-# or
+# atau
 npm run start:demo
 ```
 
-### Production Mode (Real API)
+Aplikasi akan berjalan di `http://localhost:4200/`
+
+### Production Mode
+
+Jalankan dengan konfigurasi production (real API):
 
 ```bash
 npm run start:prod
@@ -28,96 +70,123 @@ npm run start:prod
 ### Build
 
 ```bash
-npm run build:demo     # Build for demo
-npm run build:prod     # Build for production
+# Build untuk demo (LocalStorage)
+npm run build:demo
+
+# Build untuk production (Real API)
+npm run build:prod
 ```
 
-## 🛠 Technology Stack
+Build artifacts akan tersimpan di folder `dist/`
 
-- **Angular 20.3.0** - Frontend framework
-- **TypeScript 5.9.2** - Programming language
-- **PrimeNG 20.4.0** - UI component library
-- **TailwindCSS 4.1.18** - Utility-first CSS
-- **Lucide Angular** - Icon library (1,555+ icons)
-- **NgRx 20.1.0** - State management
-- **Standalone Components** - Modern Angular architecture
+### Running Tests
 
-## 🎨 Design System
+```bash
+npm test
+```
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── core/              # Core services, guards, interceptors
+│   ├── shared/            # Shared components, directives, pipes
+│   ├── features/          # Feature modules (lazy loaded)
+│   │   ├── dashboard/
+│   │   ├── items/
+│   │   ├── warehouses/
+│   │   ├── inbound/
+│   │   ├── outbound/
+│   │   ├── production/
+│   │   ├── customs-integration/
+│   │   ├── traceability/
+│   │   └── ...
+│   └── store/             # NgRx state management
+├── environments/          # Environment configurations
+└── styles.scss           # Global styles
+```
+
+Dokumentasi lengkap struktur folder: [docs/FOLDER_STRUCTURE.md](docs/FOLDER_STRUCTURE.md)
+
+## Configuration
+
+### Environment Files
+
+- `environment.ts` - Development configuration
+- `environment.demo.ts` - Demo mode dengan LocalStorage
+- `environment.prod.ts` - Production configuration dengan real API
+
+### Tailwind Configuration
+
+Konfigurasi Tailwind CSS tersedia di `tailwind.config.js` dengan custom theme extensions.
+
+## Documentation
+
+Dokumentasi lengkap tersedia di folder `docs/`:
+
+- **[Setup Complete](docs/SETUP_COMPLETE.md)** - Installation status dan technology stack
+- **[Folder Structure](docs/FOLDER_STRUCTURE.md)** - Project architecture dan folder organization
+- **[Navigation Guide](docs/NAVIGATION.md)** - Menu structure dan routing
+- **[Build Success](docs/BUILD_SUCCESS.md)** - Build status dan fixes applied
+
+## Design System
 
 - **Primary Color**: Sky Blue (`sky-500`)
 - **Style**: Modern, minimalist, professional
-- **Theme**: White dominant with subtle blue accents
+- **Theme**: White dominant dengan subtle blue accents
+- **Typography**: Inter font family dengan variable font support
+- **Icons**: Lucide Angular untuk consistent icon system
 
-## 📋 Features
+## Code Scaffolding
 
-- ✅ Inventory Management
-- ✅ Purchasing & Warehouse Operations
-- ✅ Production & Quality Control
-- ✅ Customs Integration (IT Inventory, CEISA)
-- ✅ Traceability System (RFID, Batch Tracking)
-- ✅ Reports & Analytics
-- ✅ Settings & Configuration
-
-## 🔧 Development
-
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
-
-## 🔧 Development
-
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
-
-## Development server
-
-To start a local development server, run:
+Generate komponen baru menggunakan Angular CLI:
 
 ```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
+# Generate component
 ng generate component component-name
-```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+# Generate service
+ng generate service service-name
 
-```bash
+# Generate module
+ng generate module module-name
+
+# Lihat semua opsi
 ng generate --help
 ```
 
-## Building
+## Code Quality
 
-To build the project run:
+Project ini menggunakan:
 
-```bash
-ng build
-```
+- **Prettier** - Code formatting dengan custom configuration
+- **TypeScript Strict Mode** - Type safety enforcement
+- **ESLint** - Code linting (jika dikonfigurasi)
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Format code:
 
 ```bash
-ng test
+npx prettier --write "src/**/*.{ts,html,scss}"
 ```
 
-## Running end-to-end tests
+## Contributing
 
-For end-to-end (e2e) testing, run:
+1. Create feature branch dari `main`
+2. Commit changes dengan descriptive messages
+3. Push ke branch
+4. Create Pull Request
 
-```bash
-ng e2e
-```
+## License
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Private project - All rights reserved
 
-## Additional Resources
+## Support
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Untuk pertanyaan atau issue, silakan hubungi tim development.
+
+---
+
+**Version**: 0.0.0  
+**Last Updated**: January 2026  
+**Built with**: Angular CLI 20.3.10
