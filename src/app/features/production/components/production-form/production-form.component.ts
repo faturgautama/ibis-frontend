@@ -19,32 +19,38 @@ import { LucideAngularModule, Factory, Plus, Trash2 } from 'lucide-angular';
 
 // Services
 import { ProductionDemoService } from '../../services/production-demo.service';
+import { WarehouseDemoService } from '../../../warehouse/services/warehouse-demo.service';
+import { InventoryDemoService } from '../../../inventory/services/inventory-demo.service';
 
 // Models
 import { WOStatus } from '../../models/production.model';
+import { Warehouse } from '../../../warehouse/models/warehouse.model';
+import { Item, ItemType } from '../../../inventory/models/item.model';
+import { DialogModule } from 'primeng/dialog';
 
 /**
  * Production Form Component
  * Requirements: 9.2, 9.3, 9.4, 9.5
  */
 @Component({
-    selector: 'app-production-form',
-    standalone: true,
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        ButtonModule,
-        InputTextModule,
-        TextareaModule,
-        SelectModule,
-        DatePickerModule,
-        InputNumberModule,
-        TableModule,
-        ToastModule,
-        LucideAngularModule
-    ],
-    providers: [MessageService],
-    template: `
+  selector: 'app-production-form',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    InputTextModule,
+    TextareaModule,
+    SelectModule,
+    DatePickerModule,
+    InputNumberModule,
+    TableModule,
+    ToastModule,
+    DialogModule,
+    LucideAngularModule
+  ],
+  providers: [MessageService],
+  template: `
     <div class="main-layout overflow-hidden">
       <!-- Page Header -->
       <div class="mb-6">
@@ -102,7 +108,17 @@ import { WOStatus } from '../../models/production.model';
                 <label class="text-sm font-medium text-gray-700 mb-1">
                   Warehouse <span class="text-red-500">*</span>
                 </label>
-                <input pInputText formControlName="warehouse_name" class="w-full" />
+                <p-select
+                  formControlName="warehouse_name"
+                  [options]="warehouseOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Select Warehouse"
+                  [filter]="true"
+                  filterBy="label"
+                  class="w-full"
+                  (onChange)="onWarehouseChange($event)"
+                />
                 <small *ngIf="isFieldInvalid('warehouse_name')" class="text-red-600 mt-1">Warehouse is required</small>
               </div>
             </div>
@@ -115,18 +131,25 @@ import { WOStatus } from '../../models/production.model';
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="flex flex-col">
                 <label class="text-sm font-medium text-gray-700 mb-1">
-                  Output Item Code <span class="text-red-500">*</span>
+                  Output Item <span class="text-red-500">*</span>
                 </label>
-                <input pInputText formControlName="output_item_code" class="w-full" />
-                <small *ngIf="isFieldInvalid('output_item_code')" class="text-red-600 mt-1">Output item code is required</small>
+                <p-select
+                  formControlName="output_item_code"
+                  [options]="itemOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Select Output Item"
+                  [filter]="true"
+                  filterBy="label"
+                  class="w-full"
+                  (onChange)="onOutputItemChange($event)"
+                />
+                <small *ngIf="isFieldInvalid('output_item_code')" class="text-red-600 mt-1">Output item is required</small>
               </div>
 
               <div class="flex flex-col">
-                <label class="text-sm font-medium text-gray-700 mb-1">
-                  Output Item Name <span class="text-red-500">*</span>
-                </label>
-                <input pInputText formControlName="output_item_name" class="w-full" />
-                <small *ngIf="isFieldInvalid('output_item_name')" class="text-red-600 mt-1">Output item name is required</small>
+                <label class="text-sm font-medium text-gray-700 mb-1">Output Item Name</label>
+                <input pInputText formControlName="output_item_name" class="w-full" [readonly]="true" />
               </div>
 
               <div class="flex flex-col">
@@ -138,11 +161,8 @@ import { WOStatus } from '../../models/production.model';
               </div>
 
               <div class="flex flex-col">
-                <label class="text-sm font-medium text-gray-700 mb-1">
-                  Unit <span class="text-red-500">*</span>
-                </label>
-                <input pInputText formControlName="unit" class="w-full" />
-                <small *ngIf="isFieldInvalid('unit')" class="text-red-600 mt-1">Unit is required</small>
+                <label class="text-sm font-medium text-gray-700 mb-1">Unit</label>
+                <input pInputText formControlName="unit" class="w-full" [readonly]="true" />
               </div>
 
               <div class="flex flex-col">
@@ -212,65 +232,58 @@ import { WOStatus } from '../../models/production.model';
                 label="Add Material"
                 icon="pi pi-plus"
                 class="p-button-sm"
-                (click)="addMaterial()"
+                (click)="showAddMaterialDialog()"
               ></button>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Material Code</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Material Name</th>
-                    <th class="px-4 py-2 text-right text-sm font-medium text-gray-700">Required Qty</th>
-                    <th class="px-4 py-2 text-right text-sm font-medium text-gray-700">Consumed Qty</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Unit</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Batch Number</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Warehouse</th>
-                    <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody formArrayName="materials">
-                  <tr *ngFor="let material of materials.controls; let i = index" [formGroupName]="i" class="border-b">
-                    <td class="px-4 py-2">
-                      <input pInputText formControlName="material_item_code" class="w-full" />
-                    </td>
-                    <td class="px-4 py-2">
-                      <input pInputText formControlName="material_item_name" class="w-full" />
-                    </td>
-                    <td class="px-4 py-2">
-                      <p-inputnumber formControlName="required_quantity" [min]="0" class="w-full" />
-                    </td>
-                    <td class="px-4 py-2">
-                      <p-inputnumber formControlName="consumed_quantity" [min]="0" class="w-full" [disabled]="!isEditMode" />
-                    </td>
-                    <td class="px-4 py-2">
-                      <input pInputText formControlName="unit" class="w-full" />
-                    </td>
-                    <td class="px-4 py-2">
-                      <input pInputText formControlName="batch_number" class="w-full" />
-                    </td>
-                    <td class="px-4 py-2">
-                      <input pInputText formControlName="warehouse_name" class="w-full" />
-                    </td>
-                    <td class="px-4 py-2 text-center">
+            <p-table [value]="materials" [paginator]="false">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Material Code</th>
+                  <th>Material Name</th>
+                  <th>Required Qty</th>
+                  <th>Consumed Qty</th>
+                  <th>Unit</th>
+                  <th>Batch Number</th>
+                  <th>Warehouse</th>
+                  <th>Actions</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-material let-rowIndex="rowIndex">
+                <tr>
+                  <td>{{ material.material_item_code }}</td>
+                  <td>{{ material.material_item_name }}</td>
+                  <td>{{ material.required_quantity }}</td>
+                  <td>{{ material.consumed_quantity }}</td>
+                  <td>{{ material.unit }}</td>
+                  <td>{{ material.batch_number || '-' }}</td>
+                  <td>{{ material.warehouse_name }}</td>
+                  <td>
+                    <div class="flex gap-2">
                       <button
                         pButton
-                        type="button"
-                        icon="pi pi-trash"
-                        class="p-button-text p-button-danger p-button-sm"
-                        (click)="removeMaterial(i)"
+                        icon="pi pi-pencil"
+                        class="p-button-text p-button-sm"
+                        (click)="showEditMaterialDialog(rowIndex)"
                       ></button>
-                    </td>
-                  </tr>
-                  <tr *ngIf="materials.length === 0">
-                    <td colspan="8" class="px-4 py-8 text-center text-gray-500">
-                      No materials added. Click "Add Material" to add raw materials.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                      <button
+                        pButton
+                        icon="pi pi-trash"
+                        class="p-button-text p-button-sm p-button-danger"
+                        (click)="removeMaterial(rowIndex)"
+                      ></button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="8" class="text-center text-gray-500 py-4">
+                    No materials added yet. Click "Add Material" to start.
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
           </div>
 
           <!-- Notes -->
@@ -307,195 +320,479 @@ import { WOStatus } from '../../models/production.model';
           </div>
         </form>
       </div>
+
+      <!-- Add/Edit Material Dialog -->
+      <p-dialog
+        [(visible)]="displayMaterialDialog"
+        [header]="isEditingMaterial ? 'Edit Material' : 'Add Material'"
+        [modal]="true"
+        [style]="{width: '700px'}"
+        [draggable]="false"
+      >
+        <form [formGroup]="materialForm" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Material Selection -->
+            <div class="flex flex-col md:col-span-2">
+              <label class="text-sm font-medium text-gray-700 mb-1">
+                Material (Raw Material) <span class="text-red-500">*</span>
+              </label>
+              <p-select
+                formControlName="material_item_id"
+                [options]="rawMaterialOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Material"
+                [filter]="true"
+                filterBy="label"
+                class="w-full"
+                (onChange)="onMaterialSelect($event)"
+              />
+            </div>
+
+            <!-- Material Code (readonly) -->
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-1">Material Code</label>
+              <input pInputText formControlName="material_item_code" class="w-full" [readonly]="true" />
+            </div>
+
+            <!-- Material Name (readonly) -->
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-1">Material Name</label>
+              <input pInputText formControlName="material_item_name" class="w-full" [readonly]="true" />
+            </div>
+
+            <!-- Required Quantity -->
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-1">
+                Required Quantity <span class="text-red-500">*</span>
+              </label>
+              <p-inputNumber
+                formControlName="required_quantity"
+                [min]="0"
+                class="w-full"
+              />
+            </div>
+
+            <!-- Consumed Quantity -->
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-1">Consumed Quantity</label>
+              <p-inputNumber
+                formControlName="consumed_quantity"
+                [min]="0"
+                class="w-full"
+                [disabled]="!isEditMode"
+              />
+            </div>
+
+            <!-- Unit (readonly) -->
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-1">Unit</label>
+              <input pInputText formControlName="unit" class="w-full" [readonly]="true" />
+            </div>
+
+            <!-- Batch Number -->
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-1">Batch Number</label>
+              <input pInputText formControlName="batch_number" class="w-full" />
+            </div>
+
+            <!-- Warehouse -->
+            <div class="flex flex-col md:col-span-2">
+              <label class="text-sm font-medium text-gray-700 mb-1">
+                Warehouse <span class="text-red-500">*</span>
+              </label>
+              <p-select
+                formControlName="warehouse_name"
+                [options]="warehouseOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Warehouse"
+                [filter]="true"
+                filterBy="label"
+                class="w-full"
+                appendTo="body"
+                (onChange)="onMaterialWarehouseChange($event)"
+              />
+            </div>
+          </div>
+        </form>
+
+        <ng-template pTemplate="footer">
+          <button
+            pButton
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="displayMaterialDialog = false"
+          ></button>
+          <button
+            pButton
+            [label]="isEditingMaterial ? 'Update' : 'Add'"
+            icon="pi pi-check"
+            (click)="saveMaterial()"
+            [disabled]="materialForm.invalid"
+          ></button>
+        </ng-template>
+      </p-dialog>
     </div>
 
     <p-toast />
   `
 })
 export class ProductionFormComponent implements OnInit {
-    private fb = inject(FormBuilder);
-    private router = inject(Router);
-    private route = inject(ActivatedRoute);
-    private productionService = inject(ProductionDemoService);
-    private messageService = inject(MessageService);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private productionService = inject(ProductionDemoService);
+  private warehouseService = inject(WarehouseDemoService);
+  private inventoryService = inject(InventoryDemoService);
+  private messageService = inject(MessageService);
 
-    // Icons
-    FactoryIcon = Factory;
-    PlusIcon = Plus;
-    Trash2Icon = Trash2;
+  // Icons
+  FactoryIcon = Factory;
+  PlusIcon = Plus;
+  Trash2Icon = Trash2;
 
-    // Form
-    productionForm!: FormGroup;
-    isEditMode = false;
-    productionId: string | null = null;
-    loading = false;
+  // Data
+  warehouses: Warehouse[] = [];
+  warehouseOptions: { label: string; value: string }[] = [];
+  items: Item[] = [];
+  itemOptions: { label: string; value: string }[] = [];
+  rawMaterialOptions: { label: string; value: string }[] = [];
+  materials: any[] = [];
 
-    // Dropdown options
-    statusOptions = [
-        { label: 'Planned', value: WOStatus.PLANNED },
-        { label: 'In Progress', value: WOStatus.IN_PROGRESS },
-        { label: 'Completed', value: WOStatus.COMPLETED },
-        { label: 'Cancelled', value: WOStatus.CANCELLED }
-    ];
+  // Form
+  productionForm!: FormGroup;
+  materialForm!: FormGroup;
+  isEditMode = false;
+  productionId: string | null = null;
+  loading = false;
 
-    ngOnInit(): void {
-        this.initializeForm();
-        this.checkEditMode();
-    }
+  // Dialog
+  displayMaterialDialog = false;
+  isEditingMaterial = false;
+  editingMaterialIndex: number = -1;
 
-    initializeForm(): void {
-        this.productionForm = this.fb.group({
-            wo_number: ['', Validators.required],
-            wo_date: [new Date(), Validators.required],
-            status: [WOStatus.PLANNED],
-            output_item_id: [''],
-            output_item_code: ['', Validators.required],
-            output_item_name: ['', Validators.required],
-            planned_quantity: [0, [Validators.required, Validators.min(1)]],
-            actual_quantity: [0],
-            unit: ['', Validators.required],
-            warehouse_id: [''],
-            warehouse_code: [''],
-            warehouse_name: ['', Validators.required],
-            yield_percentage: [0],
-            scrap_quantity: [0],
-            scrap_reason: [''],
-            start_date: [null],
-            completion_date: [null],
-            notes: [''],
-            materials: this.fb.array([])
+  // Dropdown options
+  statusOptions = [
+    { label: 'Planned', value: WOStatus.PLANNED },
+    { label: 'In Progress', value: WOStatus.IN_PROGRESS },
+    { label: 'Completed', value: WOStatus.COMPLETED },
+    { label: 'Cancelled', value: WOStatus.CANCELLED }
+  ];
+
+  ngOnInit(): void {
+    this.initializeForm();
+    this.initializeMaterialForm();
+    this.loadWarehouses();
+    this.loadItems();
+    this.checkEditMode();
+  }
+
+  loadWarehouses(): void {
+    this.warehouseService.getAll().subscribe({
+      next: (warehouses) => {
+        this.warehouses = warehouses;
+        this.warehouseOptions = warehouses.map(warehouse => ({
+          label: `${warehouse.warehouse_name} (${warehouse.warehouse_code})`,
+          value: warehouse.warehouse_name
+        }));
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load warehouses'
         });
+      }
+    });
+  }
+
+  loadItems(): void {
+    this.inventoryService.getAll().subscribe({
+      next: (items) => {
+        this.items = items;
+        // Filter only finished goods for output product
+        const finishedGoods = items.filter(item => item.item_type === ItemType.FG);
+        this.itemOptions = finishedGoods.map(item => ({
+          label: `${item.item_code} - ${item.item_name}`,
+          value: item.item_code
+        }));
+
+        // Filter raw materials for material requirements
+        const rawMaterials = items.filter(item => item.item_type === ItemType.RAW);
+        this.rawMaterialOptions = rawMaterials.map(item => ({
+          label: `${item.item_code} - ${item.item_name}`,
+          value: item.id
+        }));
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load items'
+        });
+      }
+    });
+  }
+
+  onWarehouseChange(event: any): void {
+    const selectedWarehouseName = event.value;
+    const selectedWarehouse = this.warehouses.find(w => w.warehouse_name === selectedWarehouseName);
+
+    if (selectedWarehouse) {
+      this.productionForm.patchValue({
+        warehouse_id: selectedWarehouse.id,
+        warehouse_code: selectedWarehouse.warehouse_code
+      });
+    }
+  }
+
+  onOutputItemChange(event: any): void {
+    const selectedItemCode = event.value;
+    const selectedItem = this.items.find(item => item.item_code === selectedItemCode);
+
+    if (selectedItem) {
+      this.productionForm.patchValue({
+        output_item_id: selectedItem.id,
+        output_item_name: selectedItem.item_name,
+        unit: selectedItem.unit
+      });
+    }
+  }
+
+  initializeForm(): void {
+    this.productionForm = this.fb.group({
+      wo_number: ['', Validators.required],
+      wo_date: [new Date(), Validators.required],
+      status: [WOStatus.PLANNED],
+      output_item_id: [''],
+      output_item_code: ['', Validators.required],
+      output_item_name: ['', Validators.required],
+      planned_quantity: [0, [Validators.required, Validators.min(1)]],
+      actual_quantity: [0],
+      unit: ['', Validators.required],
+      warehouse_id: [''],
+      warehouse_code: [''],
+      warehouse_name: ['', Validators.required],
+      yield_percentage: [0],
+      scrap_quantity: [0],
+      scrap_reason: [''],
+      start_date: [null],
+      completion_date: [null],
+      notes: [''],
+      materials: this.fb.array([])
+    });
+
+    // Auto-calculate yield percentage when actual or planned quantity changes
+    this.productionForm.get('actual_quantity')?.valueChanges.subscribe(() => {
+      this.calculateYieldPercentage();
+    });
+
+    this.productionForm.get('planned_quantity')?.valueChanges.subscribe(() => {
+      this.calculateYieldPercentage();
+    });
+  }
+
+  initializeMaterialForm(): void {
+    this.materialForm = this.fb.group({
+      material_item_id: ['', Validators.required],
+      material_item_code: [''],
+      material_item_name: [''],
+      required_quantity: [0, [Validators.required, Validators.min(0)]],
+      consumed_quantity: [0],
+      unit: [''],
+      batch_number: [''],
+      warehouse_id: [''],
+      warehouse_code: [''],
+      warehouse_name: ['', Validators.required]
+    });
+  }
+
+  calculateYieldPercentage(): void {
+    const plannedQty = this.productionForm.get('planned_quantity')?.value || 0;
+    const actualQty = this.productionForm.get('actual_quantity')?.value || 0;
+
+    if (plannedQty > 0) {
+      const yieldPercentage = (actualQty / plannedQty) * 100;
+      this.productionForm.patchValue({
+        yield_percentage: Math.round(yieldPercentage * 100) / 100 // Round to 2 decimal places
+      }, { emitEvent: false });
+    } else {
+      this.productionForm.patchValue({
+        yield_percentage: 0
+      }, { emitEvent: false });
+    }
+  }
+
+  showAddMaterialDialog(): void {
+    this.isEditingMaterial = false;
+    this.editingMaterialIndex = -1;
+    this.materialForm.reset({
+      required_quantity: 0,
+      consumed_quantity: 0
+    });
+    this.displayMaterialDialog = true;
+  }
+
+  showEditMaterialDialog(index: number): void {
+    this.isEditingMaterial = true;
+    this.editingMaterialIndex = index;
+    const material = this.materials[index];
+    this.materialForm.patchValue(material);
+    this.displayMaterialDialog = true;
+  }
+
+  onMaterialSelect(event: any): void {
+    const selectedItemId = event.value;
+    const selectedItem = this.items.find(item => item.id === selectedItemId);
+
+    if (selectedItem) {
+      this.materialForm.patchValue({
+        material_item_code: selectedItem.item_code,
+        material_item_name: selectedItem.item_name,
+        unit: selectedItem.unit
+      });
+    }
+  }
+
+  onMaterialWarehouseChange(event: any): void {
+    const selectedWarehouseName = event.value;
+    const selectedWarehouse = this.warehouses.find(w => w.warehouse_name === selectedWarehouseName);
+
+    if (selectedWarehouse) {
+      this.materialForm.patchValue({
+        warehouse_id: selectedWarehouse.id,
+        warehouse_code: selectedWarehouse.warehouse_code
+      });
+    }
+  }
+
+  saveMaterial(): void {
+    if (this.materialForm.invalid) {
+      return;
     }
 
-    get materials(): FormArray {
-        return this.productionForm.get('materials') as FormArray;
+    const materialData = this.materialForm.value;
+
+    if (this.isEditingMaterial) {
+      this.materials[this.editingMaterialIndex] = materialData;
+    } else {
+      this.materials.push(materialData);
     }
 
-    addMaterial(): void {
-        const materialGroup = this.fb.group({
-            material_item_id: [''],
-            material_item_code: ['', Validators.required],
-            material_item_name: ['', Validators.required],
-            required_quantity: [0, [Validators.required, Validators.min(0)]],
-            consumed_quantity: [0],
-            unit: ['', Validators.required],
-            batch_number: [''],
-            warehouse_id: [''],
-            warehouse_code: [''],
-            warehouse_name: ['', Validators.required]
+    this.displayMaterialDialog = false;
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: this.isEditingMaterial ? 'Material updated' : 'Material added'
+    });
+  }
+
+  removeMaterial(index: number): void {
+    this.materials.splice(index, 1);
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Material removed'
+    });
+  }
+
+  addMaterial(): void {
+    this.showAddMaterialDialog();
+  }
+
+  checkEditMode(): void {
+    this.productionId = this.route.snapshot.paramMap.get('id');
+    if (this.productionId) {
+      this.isEditMode = true;
+      this.loadProduction(this.productionId);
+    }
+  }
+
+  loadProduction(id: string): void {
+    this.loading = true;
+    this.productionService.getById(id).subscribe({
+      next: (production) => {
+        this.productionForm.patchValue({
+          ...production,
+          wo_date: new Date(production.wo_date),
+          start_date: production.start_date ? new Date(production.start_date) : null,
+          completion_date: production.completion_date ? new Date(production.completion_date) : null
         });
 
-        this.materials.push(materialGroup);
-    }
-
-    removeMaterial(index: number): void {
-        this.materials.removeAt(index);
-    }
-
-    checkEditMode(): void {
-        this.productionId = this.route.snapshot.paramMap.get('id');
-        if (this.productionId) {
-            this.isEditMode = true;
-            this.loadProduction(this.productionId);
-        }
-    }
-
-    loadProduction(id: string): void {
-        this.loading = true;
-        this.productionService.getById(id).subscribe({
-            next: (production) => {
-                this.productionForm.patchValue({
-                    ...production,
-                    wo_date: new Date(production.wo_date),
-                    start_date: production.start_date ? new Date(production.start_date) : null,
-                    completion_date: production.completion_date ? new Date(production.completion_date) : null
-                });
-
-                // Load materials
-                this.productionService.getMaterials(id).subscribe({
-                    next: (materials) => {
-                        materials.forEach(material => {
-                            const materialGroup = this.fb.group({
-                                material_item_id: [material.material_item_id],
-                                material_item_code: [material.material_item_code, Validators.required],
-                                material_item_name: [material.material_item_name, Validators.required],
-                                required_quantity: [material.required_quantity, [Validators.required, Validators.min(0)]],
-                                consumed_quantity: [material.consumed_quantity],
-                                unit: [material.unit, Validators.required],
-                                batch_number: [material.batch_number],
-                                warehouse_id: [material.warehouse_id],
-                                warehouse_code: [material.warehouse_code],
-                                warehouse_name: [material.warehouse_name, Validators.required]
-                            });
-                            this.materials.push(materialGroup);
-                        });
-                        this.loading = false;
-                    }
-                });
-            },
-            error: (error) => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: error.error?.message || 'Failed to load production order'
-                });
-                this.loading = false;
-            }
+        // Load materials
+        this.productionService.getMaterials(id).subscribe({
+          next: (materialsData) => {
+            this.materials = materialsData;
+            this.loading = false;
+          }
         });
-    }
-
-    onSubmit(): void {
-        if (this.productionForm.invalid || this.materials.length === 0) {
-            Object.keys(this.productionForm.controls).forEach(key => {
-                this.productionForm.get(key)?.markAsTouched();
-            });
-            this.materials.controls.forEach(material => {
-                Object.keys((material as FormGroup).controls).forEach(key => {
-                    material.get(key)?.markAsTouched();
-                });
-            });
-            return;
-        }
-
-        this.loading = true;
-
-        const formValue = this.productionForm.value;
-        const orderData = {
-            ...formValue,
-            created_by: 'admin'
-        };
-        delete orderData.materials;
-
-        const materialsData = formValue.materials;
-
-        this.productionService.create(orderData, materialsData).subscribe({
-            next: () => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Production work order created successfully'
-                });
-                setTimeout(() => {
-                    this.router.navigate(['/production']);
-                }, 1000);
-            },
-            error: (error) => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: error.error?.message || 'Failed to save production order'
-                });
-                this.loading = false;
-            }
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'Failed to load production order'
         });
+        this.loading = false;
+      }
+    });
+  }
+
+  onSubmit(): void {
+    if (this.productionForm.invalid || this.materials.length === 0) {
+      Object.keys(this.productionForm.controls).forEach(key => {
+        this.productionForm.get(key)?.markAsTouched();
+      });
+
+      if (this.materials.length === 0) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Please add at least one material'
+        });
+      }
+      return;
     }
 
-    onCancel(): void {
-        this.router.navigate(['/production']);
-    }
+    this.loading = true;
 
-    isFieldInvalid(fieldName: string): boolean {
-        const field = this.productionForm.get(fieldName);
-        return !!(field && field.invalid && (field.dirty || field.touched));
-    }
+    const formValue = this.productionForm.value;
+    const orderData = {
+      ...formValue,
+      created_by: 'admin'
+    };
+    delete orderData.materials;
+
+    this.productionService.create(orderData, this.materials).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Production work order created successfully'
+        });
+        setTimeout(() => {
+          this.router.navigate(['/production']);
+        }, 1000);
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'Failed to save production order'
+        });
+        this.loading = false;
+      }
+    });
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/production']);
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.productionForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
 }

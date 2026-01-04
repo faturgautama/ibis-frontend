@@ -12,9 +12,11 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 // Lucide icons
-import { LucideAngularModule, Users } from 'lucide-angular';
+import { LucideAngularModule, Truck } from 'lucide-angular';
 
 // Services
 import { SupplierDemoService } from '../../services/supplier-demo.service';
@@ -43,44 +45,48 @@ import { Supplier } from '../../models/supplier.model';
     TagModule,
     TooltipModule,
     ConfirmDialogModule,
-    LucideAngularModule
+    LucideAngularModule,
+    IconFieldModule,
+    InputIconModule
   ],
   providers: [ConfirmationService],
   template: `
     <div class="main-layout">
       <!-- Page Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <lucide-icon [img]="UsersIcon" class="w-8 h-8 text-sky-600"></lucide-icon>
-          <div>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="TruckIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
             <h1 class="text-2xl font-semibold text-gray-900">Suppliers</h1>
-            <p class="text-sm text-gray-600 mt-1">Manage supplier information</p>
           </div>
+          <button
+            pButton
+            type="button"
+            label="Add Supplier"
+            icon="pi pi-plus"
+            (click)="onCreateSupplier()"
+          ></button>
         </div>
-        <button
-          pButton
-          type="button"
-          label="Add Supplier"
-          icon="pi pi-plus"
-          class="p-button-primary"
-          (click)="onCreateSupplier()"
-        ></button>
+        <p class="text-sm text-gray-600">Manage supplier information</p>
       </div>
 
       <!-- Filters Section -->
-      <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+      <div class="bg-white rounded-lg shadow-sm p-4 mb-4"> 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Search -->
           <div class="flex flex-col">
             <label class="text-sm font-medium text-gray-700 mb-1">Search</label>
-            <input
-              pInputText
-              type="text"
-              placeholder="Search by code, name, or tax ID..."
-              [(ngModel)]="searchQuery"
-              (input)="onSearchChange()"
-              class="w-full"
-            />
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input
+                type="text"
+                pInputText
+                placeholder="Search by code, name, or tax ID..."
+                [(ngModel)]="searchQuery"
+                (input)="onSearchChange()"
+                class="w-full"
+              />
+            </p-iconfield>
           </div>
 
           <!-- Status Filter -->
@@ -172,7 +178,7 @@ import { Supplier } from '../../models/supplier.model';
             <tr>
               <td colspan="6" class="text-center py-8">
                 <div class="flex flex-col items-center gap-2">
-                  <lucide-icon [img]="UsersIcon" class="w-12 h-12 text-gray-400"></lucide-icon>
+                  <lucide-icon [img]="TruckIcon" class="w-12 h-12 text-gray-400"></lucide-icon>
                   <p class="text-gray-600">No suppliers found</p>
                   <button
                     pButton
@@ -199,7 +205,7 @@ export class SupplierListComponent implements OnInit {
   private supplierService = inject(SupplierDemoService);
 
   // Icons
-  UsersIcon = Users;
+  TruckIcon = Truck;
 
   // Data
   suppliers: Supplier[] = [];

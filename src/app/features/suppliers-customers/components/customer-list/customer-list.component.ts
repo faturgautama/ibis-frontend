@@ -10,27 +10,35 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
-import { LucideAngularModule, Users } from 'lucide-angular';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { LucideAngularModule, Building2 } from 'lucide-angular';
 import { CustomerDemoService } from '../../services/customer-demo.service';
 import { Customer } from '../../models/customer.model';
 
 @Component({
   selector: 'app-customer-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, SelectModule, TagModule, TooltipModule, ConfirmDialogModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, TableModule, ButtonModule, InputTextModule, SelectModule, TagModule, TooltipModule, ConfirmDialogModule, LucideAngularModule, IconFieldModule, InputIconModule],
   providers: [ConfirmationService],
   template: `
     <div class="main-layout">
       <!-- Page Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-3">
-          <lucide-icon [img]="UsersIcon" class="w-8 h-8 text-sky-600"></lucide-icon>
-          <div>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <lucide-icon [img]="UsersIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
             <h1 class="text-2xl font-semibold text-gray-900">Customers</h1>
-            <p class="text-sm text-gray-600 mt-1">Manage customer information</p>
           </div>
+          <button
+            pButton
+            type="button"
+            label="Add Customer"
+            icon="pi pi-plus"
+            (click)="onCreateCustomer()"
+          ></button>
         </div>
-        <button pButton type="button" label="Add Customer" icon="pi pi-plus" class="p-button-primary" (click)="onCreateCustomer()"></button>
+        <p class="text-sm text-gray-600">Manage customer information</p>
       </div>
 
       <!-- Filters Section -->
@@ -38,7 +46,17 @@ import { Customer } from '../../models/customer.model';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col">
             <label class="text-sm font-medium text-gray-700 mb-1">Search</label>
-            <input pInputText type="text" placeholder="Search..." [(ngModel)]="searchQuery" (input)="onSearchChange()" class="w-full" />
+            <p-iconfield>
+              <p-inputicon class="pi pi-search" />
+              <input
+                type="text"
+                pInputText
+                placeholder="Search by code, name, or tax ID..."
+                [(ngModel)]="searchQuery"
+                (input)="onSearchChange()"
+                class="w-full"
+              />
+            </p-iconfield>
           </div>
           <div class="flex flex-col">
             <label class="text-sm font-medium text-gray-700 mb-1">Status</label>
@@ -92,9 +110,16 @@ import { Customer } from '../../models/customer.model';
             <tr>
               <td colspan="6" class="text-center py-8">
                 <div class="flex flex-col items-center gap-2">
-                  <lucide-icon [img]="UsersIcon" class="w-12 h-12 text-gray-400"></lucide-icon>
+                  <lucide-icon [img]="Building2Icon" class="w-12 h-12 text-gray-400"></lucide-icon>
                   <p class="text-gray-600">No customers found</p>
-                  <button pButton type="button" label="Add First Customer" icon="pi pi-plus" class="p-button-sm" (click)="onCreateCustomer()"></button>
+                  <button
+                    pButton
+                    type="button"
+                    label="Add First Customer"
+                    icon="pi pi-plus"
+                    class="p-button-sm"
+                    (click)="onCreateCustomer()"
+                  ></button>
                 </div>
               </td>
             </tr>
@@ -110,7 +135,8 @@ export class CustomerListComponent implements OnInit {
   private confirmationService = inject(ConfirmationService);
   private customerService = inject(CustomerDemoService);
 
-  UsersIcon = Users;
+  UsersIcon = Building2;
+  Building2Icon = Building2;
 
   customers: Customer[] = [];
   filteredCustomers: Customer[] = [];

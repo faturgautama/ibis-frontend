@@ -46,22 +46,34 @@ export const inventoryReducer = createReducer(
     })),
 
     // Create Item
-    on(InventoryActions.createItem, (state): InventoryState => ({
-        ...state,
-        loading: true,
-        error: null
-    })),
-    on(InventoryActions.createItemSuccess, (state, { item }): InventoryState => ({
-        ...state,
-        items: [...state.items, item],
-        loading: false,
-        error: null
-    })),
-    on(InventoryActions.createItemFailure, (state, { error }): InventoryState => ({
-        ...state,
-        loading: false,
-        error
-    })),
+    on(InventoryActions.createItem, (state): InventoryState => {
+        console.log('Reducer: createItem action received');
+        return {
+            ...state,
+            loading: true,
+            error: null
+        };
+    }),
+    on(InventoryActions.createItemSuccess, (state, { item }): InventoryState => {
+        console.log('Reducer: createItemSuccess action received', item);
+        console.log('Current items count:', state.items.length);
+        const newState = {
+            ...state,
+            items: [...state.items, item],
+            loading: false,
+            error: null
+        };
+        console.log('New items count:', newState.items.length);
+        return newState;
+    }),
+    on(InventoryActions.createItemFailure, (state, { error }): InventoryState => {
+        console.log('Reducer: createItemFailure action received', error);
+        return {
+            ...state,
+            loading: false,
+            error
+        };
+    }),
 
     // Update Item
     on(InventoryActions.updateItem, (state): InventoryState => ({

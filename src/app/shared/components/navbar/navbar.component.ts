@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,6 +8,9 @@ import { InputIconModule } from 'primeng/inputicon';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
+import { Menu } from 'primeng/menu';
+import { MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 import { NotificationPanelComponent } from '../../../features/alerts/components/notification-panel/notification-panel.component';
 
 /**
@@ -39,12 +42,15 @@ export interface User {
     ButtonModule,
     AvatarModule,
     TooltipModule,
-    NotificationPanelComponent
+    NotificationPanelComponent,
+    MenuModule
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
+  @ViewChild('userMenu') userMenu!: Menu;
+
   searchQuery = '';
 
   currentUser: User = {
@@ -54,6 +60,19 @@ export class NavbarComponent {
     role: 'Administrator',
     initials: 'AU'
   };
+
+  userMenuItems: MenuItem[] = [
+    {
+      label: 'Settings',
+      icon: 'pi pi-cog',
+      command: () => this.navigateToSettings()
+    },
+    {
+      label: 'Logout',
+      icon: 'pi pi-sign-out',
+      command: () => this.logout()
+    }
+  ];
 
   constructor(private router: Router) { }
 
@@ -108,9 +127,31 @@ export class NavbarComponent {
   /**
    * Toggle user menu dropdown
    */
-  toggleUserMenu(): void {
-    console.log('Toggle user menu');
-    // TODO: Implement user menu toggle
+  toggleUserMenu(event: Event): void {
+    this.userMenu.toggle(event);
+  }
+
+  /**
+   * Navigate to user profile
+   */
+  navigateToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
+
+  /**
+   * Navigate to settings
+   */
+  navigateToSettings(): void {
+    this.router.navigate(['/configuration']);
+  }
+
+  /**
+   * Logout user
+   */
+  logout(): void {
+    console.log('Logging out...');
+    // TODO: Implement actual logout logic
+    this.router.navigate(['/login']);
   }
 
   /**

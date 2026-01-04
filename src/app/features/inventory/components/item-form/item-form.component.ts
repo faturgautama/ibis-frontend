@@ -2,9 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { MessageService } from 'primeng/api';
 
 // PrimeNG imports
 import { InputTextModule } from 'primeng/inputtext';
@@ -15,13 +13,13 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { FileUploadModule } from 'primeng/fileupload';
 import { CardModule } from 'primeng/card';
+import { ToastModule } from 'primeng/toast';
 
 // Lucide icons
 import { LucideAngularModule, Save, X, Upload, Package } from 'lucide-angular';
 
-// Store
-import { InventoryActions } from '../../../../store/inventory/inventory.actions';
-import { selectSelectedItem, selectInventoryLoading } from '../../../../store/inventory/inventory.selectors';
+// Services
+import { InventoryDemoService } from '../../services/inventory-demo.service';
 
 // Models
 import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '../../models/item.model';
@@ -48,8 +46,10 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
     ButtonModule,
     FileUploadModule,
     CardModule,
+    ToastModule,
     LucideAngularModule
   ],
+  providers: [MessageService],
   template: `
     <div class="main-layout overflow-hidden">
       <!-- Page Header -->
@@ -487,18 +487,21 @@ import { Item, ItemType, FacilityStatus, CreateItemDto, UpdateItemDto } from '..
               pButton
               [label]="submitButtonLabel"
               icon="pi pi-check"
-              [loading]="(loading$ | async) || false"
-              [disabled]="itemForm.invalid"
+              [disabled]="itemForm.invalid || loading"
+              [loading]="loading"
             ></button>
           </div>
         </form>
       </div>
+      
+      <p-toast />
     </div>
   `
 })
 export class ItemFormComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private store = inject(Store);
+  private inventoryService = inject(InventoryDemoService);
+  private messageService = inject(MessageService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -512,9 +515,7 @@ export class ItemFormComponent implements OnInit {
   itemForm!: FormGroup;
   isEditMode = false;
   itemId: string | null = null;
-
-  // Observables
-  loading$: Observable<boolean>;
+  loading = false;
 
   // Dropdown options
   itemTypeOptions = [
@@ -543,11 +544,6 @@ export class ItemFormComponent implements OnInit {
     { label: 'EUR - Euro', value: 'EUR' },
     { label: 'SGD - Singapore Dollar', value: 'SGD' }
   ];
-
-  constructor() {
-    this.loading$ = this.store.select(selectInventoryLoading);
-    this.initializeForm();
-  }
 
   ngOnInit(): void {
     // Check if we're in edit mode
@@ -663,19 +659,22 @@ export class ItemFormComponent implements OnInit {
    * Load item data for editing
    */
   private loadItemForEditing(itemId: string): void {
-    this.store.dispatch(InventoryActions.loadItem({ id: itemId }));
-
-    this.store
-      .select(selectSelectedItem)
-      .pipe(
-        filter(item => !!item),
-        take(1)
-      )
-      .subscribe(item => {
-        if (item) {
-          this.populateForm(item);
-        }
-      });
+    this.loading = true;
+    this.inventoryService.getById(itemId).subscribe({
+      next: (item) => {
+        this.populateForm(item);
+        this.loading = false;
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load item'
+        });
+        this.loading = false;
+        this.navigateToItemsList();
+      }
+    });
   }
 
   /**
@@ -752,13 +751,50 @@ export class ItemFormComponent implements OnInit {
    */
   private submitFormData(): void {
     const formValue = this.itemForm.value;
+    this.loading = true;
 
     if (this.isEditMode && this.itemId) {
       const updateData: UpdateItemDto = { ...formValue };
-      this.store.dispatch(InventoryActions.updateItem({ id: this.itemId, item: updateData }));
+      this.inventoryService.update(this.itemId, updateData).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Item updated successfully'
+          });
+          this.loading = false;
+          setTimeout(() => this.navigateToItemsList(), 500);
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.message || 'Failed to update item'
+          });
+          this.loading = false;
+        }
+      });
     } else {
       const createData: CreateItemDto = { ...formValue };
-      this.store.dispatch(InventoryActions.createItem({ item: createData }));
+      this.inventoryService.create(createData).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Item created successfully'
+          });
+          this.loading = false;
+          setTimeout(() => this.navigateToItemsList(), 500);
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.message || 'Failed to create item'
+          });
+          this.loading = false;
+        }
+      });
     }
   }
 
@@ -779,11 +815,6 @@ export class ItemFormComponent implements OnInit {
     }
 
     this.submitFormData();
-
-    // Navigate back to list after a short delay
-    setTimeout(() => {
-      this.navigateToItemsList();
-    }, 500);
   }
 
   /**

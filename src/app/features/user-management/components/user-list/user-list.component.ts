@@ -29,18 +29,27 @@ import { User, UserRole, UserStatus, validatePassword } from '../../models/user.
         SelectModule
     ],
     template: `
-        <div class="p-6">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
-                    <button 
-                        pButton 
-                        label="Add User" 
-                        icon="pi pi-plus"
-                        (click)="showCreateDialog()"
-                        class="p-button-primary"
-                    ></button>
+        <div class="main-layout">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="pi pi-users text-sky-600"></i>
+                        User Management
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Manage users, roles, and permissions</p>
                 </div>
+                <button 
+                    pButton 
+                    label="Add User" 
+                    icon="pi pi-plus"
+                    (click)="showCreateDialog()"
+                    class="p-button-primary"
+                ></button>
+            </div>
+
+            <!-- Table Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6" style="max-height: calc(100vh - 13rem); overflow-y: auto">
 
                 <p-table 
                     [value]="users" 

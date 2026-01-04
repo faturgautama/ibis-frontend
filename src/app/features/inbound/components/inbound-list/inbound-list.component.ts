@@ -38,7 +38,9 @@ import { InboundHeader, getInboundStatusLabel } from '../../models/inbound.model
 
       <!-- Table Card -->
       <div class="bg-white rounded-lg shadow-sm p-6" style="max-height: calc(100vh - 13rem); overflow-y: auto">
-        <p-table [value]="inbounds" [paginator]="true" [rows]="20" [loading]="loading">
+        <p-table [value]="inbounds" [paginator]="true" [rows]="20" [loading]="loading" 
+        [showCurrentPageReport]="true" 
+        currentPageReportTemplate="{first} - {last} inbounds form {totalRecords} total inbounds">
           <ng-template pTemplate="header">
             <tr>
               <th>Inbound Number</th>

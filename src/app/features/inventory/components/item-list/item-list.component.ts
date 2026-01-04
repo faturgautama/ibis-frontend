@@ -2,8 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 // PrimeNG imports
 import { TableModule } from 'primeng/table';
@@ -16,6 +15,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { ToastModule } from 'primeng/toast';
 
 // Lucide icons
 import {
@@ -28,13 +28,8 @@ import {
   Package,
 } from 'lucide-angular';
 
-// Store
-import { InventoryActions } from '../../../../store/inventory/inventory.actions';
-import {
-  selectFilteredItems,
-  selectInventoryLoading,
-  selectInventoryError,
-} from '../../../../store/inventory/inventory.selectors';
+// Services
+import { InventoryDemoService } from '../../services/inventory-demo.service';
 
 // Models
 import { Item, ItemType } from '../../models/item.model';
@@ -63,8 +58,9 @@ import { Item, ItemType } from '../../models/item.model';
     LucideAngularModule,
     IconFieldModule,
     InputIconModule,
+    ToastModule
   ],
-  providers: [ConfirmationService],
+  providers: [ConfirmationService, MessageService],
   template: `
     <div class="">
       <!-- Page Header -->
@@ -137,22 +133,11 @@ import { Item, ItemType } from '../../models/item.model';
           </div>
         </div>
 
-        <!-- Error Message -->
-        <div
-          *ngIf="error$ | async as error"
-          class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4"
-        >
-          <div class="flex items-center gap-2">
-            <lucide-icon [img]="AlertTriangleIcon" class="w-5 h-5 text-red-600"></lucide-icon>
-            <p class="text-sm text-red-800">{{ error }}</p>
-          </div>
-        </div>
-
         <!-- Data Table -->
         <div class="">
           <p-table
-            [value]="(items$ | async) || []"
-            [loading]="(loading$ | async) || false"
+            [value]="filteredItems"
+            [loading]="loading"
             [paginator]="true"
             [rows]="50"
             [rowsPerPageOptions]="[10, 25, 50, 100]"
@@ -289,11 +274,14 @@ import { Item, ItemType } from '../../models/item.model';
 
       <!-- Confirmation Dialog -->
       <p-confirmDialog></p-confirmDialog>
+      
+      <p-toast />
     </div>
   `,
 })
 export class ItemListComponent implements OnInit {
-  private store = inject(Store);
+  private inventoryService = inject(InventoryDemoService);
+  private messageService = inject(MessageService);
   private router = inject(Router);
   private confirmationService = inject(ConfirmationService);
 
@@ -305,10 +293,10 @@ export class ItemListComponent implements OnInit {
   AlertTriangleIcon = AlertTriangle;
   PlusIcon = Plus;
 
-  // Observables
-  items$: Observable<Item[]>;
-  loading$: Observable<boolean>;
-  error$: Observable<string | null>;
+  // Data
+  items: Item[] = [];
+  filteredItems: Item[] = [];
+  loading = false;
 
   // Filter properties
   searchQuery = '';
@@ -328,34 +316,68 @@ export class ItemListComponent implements OnInit {
     { label: 'Non-Hazardous Only', value: false },
   ];
 
-  constructor() {
-    this.items$ = this.store.select(selectFilteredItems);
-    this.loading$ = this.store.select(selectInventoryLoading);
-    this.error$ = this.store.select(selectInventoryError);
-  }
+  constructor() { }
 
   ngOnInit(): void {
-    // Load items on component initialization
-    this.store.dispatch(InventoryActions.loadItems());
+    this.loadItems();
+  }
+
+  loadItems(): void {
+    this.loading = true;
+    this.inventoryService.getAll().subscribe({
+      next: (items) => {
+        this.items = items;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load items'
+        });
+        this.loading = false;
+      }
+    });
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.items];
+
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        item =>
+          item.item_code.toLowerCase().includes(query) ||
+          item.item_name.toLowerCase().includes(query) ||
+          item.hs_code.includes(query)
+      );
+    }
+
+    if (this.selectedItemType) {
+      filtered = filtered.filter(item => item.item_type === this.selectedItemType);
+    }
+
+    if (this.selectedHazardous !== null) {
+      filtered = filtered.filter(item => item.is_hazardous === this.selectedHazardous);
+    }
+
+    this.filteredItems = filtered;
   }
 
   onSearchChange(): void {
-    this.store.dispatch(
-      InventoryActions.setFilters({
-        filters: { searchQuery: this.searchQuery },
-      })
-    );
+    this.applyFilters();
   }
 
   onFilterChange(): void {
-    this.store.dispatch(
-      InventoryActions.setFilters({
-        filters: {
-          itemType: this.selectedItemType || undefined,
-          isHazardous: this.selectedHazardous !== null ? this.selectedHazardous : undefined,
-        },
-      })
-    );
+    this.applyFilters();
+  }
+
+  onClearFilters(): void {
+    this.searchQuery = '';
+    this.selectedItemType = null;
+    this.selectedHazardous = null;
+    this.applyFilters();
   }
 
   onCreateItem(): void {
@@ -373,7 +395,25 @@ export class ItemListComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.store.dispatch(InventoryActions.deleteItem({ id: item.id }));
+        this.loading = true;
+        this.inventoryService.delete(item.id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Item deleted successfully'
+            });
+            this.loadItems();
+          },
+          error: (err) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: err.error?.message || 'Failed to delete item'
+            });
+            this.loading = false;
+          }
+        });
       },
     });
   }

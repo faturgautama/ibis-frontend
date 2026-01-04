@@ -25,10 +25,20 @@ import { AuditLogService } from '../../services/audit-log.service';
         SelectModule
     ],
     template: `
-        <div class="p-6">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Audit Trail</h2>
+        <div class="main-layout">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="pi pi-history text-sky-600"></i>
+                        Audit Trail
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Track and monitor all system changes</p>
+                </div>
+            </div>
 
+            <!-- Table Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6" style="max-height: calc(100vh - 13rem); overflow-y: auto">
                 <!-- Filters -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div>

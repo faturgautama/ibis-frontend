@@ -8,6 +8,7 @@ import { CardModule } from 'primeng/card';
 import { TabsModule } from 'primeng/tabs';
 import { TimelineModule } from 'primeng/timeline';
 import { TagModule } from 'primeng/tag';
+import { LucideAngularModule, GitBranch, ArrowRight, ArrowLeft, QrCode, History } from 'lucide-angular';
 import { TraceabilityService } from '../../services/traceability.service';
 
 /**
@@ -26,13 +27,24 @@ import { TraceabilityService } from '../../services/traceability.service';
         CardModule,
         TabsModule,
         TimelineModule,
-        TagModule
+        TagModule,
+        LucideAngularModule
     ],
     template: `
-        <div class="p-6">
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Traceability System</h2>
-                
+        <div class="main-layout">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <lucide-icon [img]="GitBranchIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
+                        Traceability System
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Track item movements and production history</p>
+                </div>
+            </div>
+
+            <!-- Search Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                 <!-- Search Section -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div>
@@ -68,39 +80,44 @@ import { TraceabilityService } from '../../services/traceability.service';
                     <button 
                         pButton 
                         label="Trace Forward" 
-                        icon="pi pi-arrow-right"
                         (click)="traceForward()"
                         class="p-button-primary"
-                    ></button>
+                    >
+                        <lucide-icon [img]="ArrowRightIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                     <button 
                         pButton 
                         label="Trace Backward" 
-                        icon="pi pi-arrow-left"
                         (click)="traceBackward()"
                         class="p-button-secondary"
-                    ></button>
+                    >
+                        <lucide-icon [img]="ArrowLeftIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                     <button 
                         pButton 
                         label="Search by RFID" 
-                        icon="pi pi-qrcode"
                         (click)="searchRFID()"
                         class="p-button-info"
                         [disabled]="!searchRFIDValue"
-                    ></button>
+                    >
+                        <lucide-icon [img]="QrCodeIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                     <button 
                         pButton 
                         label="Production History" 
-                        icon="pi pi-history"
                         (click)="loadProductionHistory()"
                         class="p-button-help"
-                    ></button>
+                    >
+                        <lucide-icon [img]="HistoryIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                 </div>
             </div>
 
             <!-- Results Section -->
-            <p-tabs *ngIf="traceResults.length > 0 || productionHistory.length > 0">
-                <p-tabpanel header="Traceability Chain" *ngIf="traceResults.length > 0">
-                    <div class="bg-white rounded-lg shadow-md p-6">
+            <div *ngIf="traceResults.length > 0 || productionHistory.length > 0">
+                <p-tabs>
+                    <p-tabpanel header="Traceability Chain" *ngIf="traceResults.length > 0">
+                        <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-xl font-semibold text-gray-900 mb-4">
                             {{ traceDirection === 'forward' ? 'Forward Trace' : 'Backward Trace' }}
                         </h3>
@@ -130,7 +147,7 @@ import { TraceabilityService } from '../../services/traceability.service';
                 </p-tabpanel>
 
                 <p-tabpanel header="Production History" *ngIf="productionHistory.length > 0">
-                    <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
                         <h3 class="text-xl font-semibold text-gray-900 mb-4">Production Orders</h3>
                         
                         <p-table [value]="productionHistory" [paginator]="true" [rows]="10">
@@ -167,6 +184,7 @@ import { TraceabilityService } from '../../services/traceability.service';
                     </div>
                 </p-tabpanel>
             </p-tabs>
+            </div>
 
             <!-- No Results -->
             <div *ngIf="searched && traceResults.length === 0 && productionHistory.length === 0" 
@@ -178,6 +196,13 @@ import { TraceabilityService } from '../../services/traceability.service';
 })
 export class TraceabilityViewComponent implements OnInit {
     private traceabilityService = inject(TraceabilityService);
+
+    // Lucide Icons
+    GitBranchIcon = GitBranch;
+    ArrowRightIcon = ArrowRight;
+    ArrowLeftIcon = ArrowLeft;
+    QrCodeIcon = QrCode;
+    HistoryIcon = History;
 
     searchItemId = '';
     searchBatchNumber = '';

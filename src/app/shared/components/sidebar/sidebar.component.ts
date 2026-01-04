@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { LucideAngularModule, Settings } from 'lucide-angular';
 import { Subject, takeUntil } from 'rxjs';
 import { NavigationService, MenuItem } from '../../../core/services/navigation.service';
 
@@ -13,7 +14,7 @@ import { NavigationService, MenuItem } from '../../../core/services/navigation.s
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, LucideAngularModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
@@ -22,6 +23,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   toggleSidebar = true;
   menuItems: MenuItem[] = [];
+  expandedMenus: Set<string> = new Set();
+  SettingsIcon = Settings;
 
   constructor(
     private navigationService: NavigationService,
@@ -95,9 +98,36 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Toggle nested menu expand/collapse
+   */
+  toggleNestedMenu(menuId: string, event: Event): void {
+    event.stopPropagation();
+    if (this.expandedMenus.has(menuId)) {
+      this.expandedMenus.delete(menuId);
+    } else {
+      this.expandedMenus.add(menuId);
+    }
+  }
+
+  /**
+   * Check if nested menu is expanded
+   */
+  isMenuExpanded(menuId: string): boolean {
+    return this.expandedMenus.has(menuId);
+  }
+
+  /**
    * Navigate to menu item and collapse on mobile
    */
-  handleClickMenu(item: MenuItem): void {
+  handleClickMenu(item: MenuItem, event?: Event): void {
+    // If menu has children, toggle instead of navigate
+    if (item.children && item.children.length > 0) {
+      if (event) {
+        this.toggleNestedMenu(item.id, event);
+      }
+      return;
+    }
+
     console.log("menu =>", item);
     this.navigateToRoute(item.route);
   }
@@ -122,5 +152,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
    */
   isActive(route: string): boolean {
     return this.router.url === route || this.router.url.startsWith(route + '/');
+  }
+
+  /**
+   * Check if parent menu has active child
+   */
+  hasActiveChild(item: MenuItem): boolean {
+    if (!item.children) return false;
+    return item.children.some(child => this.isActive(child.route));
   }
 }

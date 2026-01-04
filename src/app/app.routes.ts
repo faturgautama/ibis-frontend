@@ -204,7 +204,7 @@ export const routes: Routes = [
 
             // Customs - Customs Sync
             {
-                path: 'customs-sync',
+                path: 'customs-integration',
                 loadComponent: () => import('./features/customs-integration/components/customs-sync-dashboard/customs-sync-dashboard.component')
                     .then(m => m.CustomsSyncDashboardComponent)
             },

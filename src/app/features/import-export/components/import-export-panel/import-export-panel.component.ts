@@ -25,10 +25,20 @@ import { ImportExportService, ImportResult, ExportHistory } from '../../services
         MessageModule
     ],
     template: `
-        <div class="p-6">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Data Import & Export</h2>
+        <div class="main-layout">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="pi pi-upload text-sky-600"></i>
+                        Data Import & Export
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Import and export master data and transactions</p>
+                </div>
+            </div>
 
+            <!-- Table Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
                 <p-tabs>
                     <!-- Import Tab -->
                     <p-tabpanel header="Import Data">

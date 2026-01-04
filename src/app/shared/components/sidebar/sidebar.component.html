@@ -2,13 +2,14 @@
     [ngClass]="sidebarWidthClass">
     <!-- Brand Section -->
     <div class="flex flex-row gap-2 items-center p-5 border-b border-t-0 border-x-0 border-solid border-gray-300">
-        <div *ngIf="isExpanded" class="flex items-center gap-2 mr-auto">
-            <i class="pi pi-box text-2xl text-blue-600"></i>
-            <span class="text-blue-700 font-bold text-base leading-4">
-                IBIS
-                <br>
-                <span class="text-xs font-medium text-gray-600">Integrated Bonded Inventory System</span>
-            </span>
+        <div *ngIf="isExpanded" class="flex flex-col items-start gap-2 mr-auto">
+            <div class="flex gap-2 items-center">
+                <img src="assets/images/network-security.png" alt="logo" class="h-10 ">
+                <span class="text-sky-600 font-bold text-4xl leading-4">
+                    IBIS
+                </span>
+            </div>
+            <span class="text-xs font-medium text-gray-600">Integrated Bonded Inventory System</span>
         </div>
 
         <p-button [rounded]="true" severity="secondary" [icon]="toggleIcon" styleClass="p-button-sm"
@@ -19,15 +20,33 @@
     <div class="flex flex-col w-full px-4 py-5 flex-1 overflow-y-auto">
         <p *ngIf="isExpanded" class="text-sm text-gray-400 mb-4 px-2">Main Menu</p>
 
-        <div *ngFor="let item of menuItems"
-            class="flex flex-row gap-3 w-full items-center mb-3 p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            [ngClass]="menuAlignmentClass" [class.bg-blue-100]="isActive(item.route)" (click)="handleClickMenu(item)">
-            <span class="text-gray-700">
-                <i [class]="item.icon"></i>
-            </span>
-            <p *ngIf="isExpanded" class="text-sm text-gray-700 mb-0">
-                {{ item.label }}
-            </p>
+        <div *ngFor="let item of menuItems" class="mb-1">
+            <!-- Parent Menu Item -->
+            <div class="flex flex-row gap-3 w-full items-center p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                [ngClass]="menuAlignmentClass" [class.bg-blue-100]="isActive(item.route) || hasActiveChild(item)"
+                (click)="handleClickMenu(item, $event)">
+                <lucide-icon [img]="item.icon" class="w-5 h-5 text-gray-700"></lucide-icon>
+                <p *ngIf="isExpanded" class="text-sm text-gray-700 mb-0 flex-1">
+                    {{ item.label }}
+                </p>
+                <i *ngIf="isExpanded && item.children && item.children.length > 0"
+                    [class]="isMenuExpanded(item.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                    class="text-xs text-gray-500" style="font-size: 12px;"></i>
+            </div>
+
+            <!-- Nested Menu Items -->
+            <div *ngIf="item.children && item.children.length > 0 && isMenuExpanded(item.id) && isExpanded"
+                class="ml-4 mt-1 space-y-1">
+                <div *ngFor="let child of item.children"
+                    class="flex flex-row gap-3 w-full items-center p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                    [class.bg-blue-50]="isActive(child.route)" [class.border-l-2]="isActive(child.route)"
+                    [class.border-blue-500]="isActive(child.route)" (click)="handleClickMenu(child)">
+                    <lucide-icon [img]="child.icon" class="w-4 h-4 text-gray-600"></lucide-icon>
+                    <p class="text-sm text-gray-600 mb-0">
+                        {{ child.label }}
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -38,9 +57,7 @@
         <div class="flex flex-row gap-3 w-full items-center p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
             [ngClass]="menuAlignmentClass" [class.bg-blue-100]="isActive('/configuration')"
             (click)="handleClickSettings()">
-            <span class="text-gray-700">
-                <i class="pi pi-cog"></i>
-            </span>
+            <lucide-icon [img]="SettingsIcon" class="w-5 h-5 text-gray-700"></lucide-icon>
             <p *ngIf="isExpanded" class="text-sm text-gray-700 mb-0">Settings</p>
         </div>
     </div>

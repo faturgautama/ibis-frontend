@@ -12,7 +12,7 @@ import { TabsModule } from 'primeng/tabs';
 import { ToastModule } from 'primeng/toast';
 
 // Lucide icons
-import { LucideAngularModule, Package, AlertTriangle, Clock, TrendingDown } from 'lucide-angular';
+import { LucideAngularModule, Package, TriangleAlert, Clock, TrendingDown, TrendingUp } from 'lucide-angular';
 
 // Services
 import { StockBalanceService } from '../../services/stock-balance.service';
@@ -25,7 +25,6 @@ import {
   StockAlert,
   StockAgingReport,
   AlertSeverity,
-  getAlertSeverityColor,
   getMovementTypeLabel
 } from '../../models/stock-balance.model';
 
@@ -50,11 +49,11 @@ import {
   ],
   providers: [MessageService],
   template: `
-    <div class="p-6">
+    <div class="">
       <div class="mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <lucide-icon [img]="PackageIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
+            <lucide-icon [img]="TrendingUpIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
             <h1 class="text-2xl font-semibold text-gray-900">Stock Balance</h1>
           </div>
         </div>
@@ -70,29 +69,60 @@ import {
               class="w-full"
             />
           </div>
-          @if (rfidEnabled) {
+          <div *ngIf="rfidEnabled">
             <button pButton label="Scan RFID" icon="pi pi-qrcode" (click)="onRFIDScan()"></button>
-          }
+          </div>
         </div>
       </div>
 
       <!-- Tabs -->
       <p-tabs [(value)]="activeTab" (onChange)="onTabChange()">
-        <p-tabpanel value="balance">
-          <ng-template pTemplate="header">
+        <p-tablist>
+          <p-tab value="balance">
             <div class="flex items-center gap-2">
               <lucide-icon [img]="PackageIcon" class="w-4 h-4"></lucide-icon>
               <span>Current Balance</span>
             </div>
-          </ng-template>
+          </p-tab>
+          <p-tab value="alerts">
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="AlertTriangleIcon" class="w-4 h-4"></lucide-icon>
+              <span>Alerts</span>
+              <span *ngIf="unacknowledgedAlerts > 0" class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                {{ unacknowledgedAlerts }}
+              </span>
+            </div>
+          </p-tab>
+          <p-tab value="expiring">
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
+              <span>Expiring Items</span>
+            </div>
+          </p-tab>
+          <p-tab value="aging">
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="TrendingDownIcon" class="w-4 h-4"></lucide-icon>
+              <span>Stock Aging</span>
+            </div>
+          </p-tab>
+          <p-tab value="history">
+            <div class="flex items-center gap-2">
+              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
+              <span>Movement History</span>
+            </div>
+          </p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+          <p-tabpanel value="balance">
           
-          <div class="bg-white rounded-lg shadow-sm">
+          <div class="bg-white rounded-lg ">
             <p-table
               [value]="filteredBalances"
               [paginator]="true"
               [rows]="20"
               [showCurrentPageReport]="true"
-              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} items"
+              currentPageReportTemplate="Showing {{ '{' }}first{{ '}' }} to {{ '{' }}last{{ '}' }} of {{ '{' }}totalRecords{{ '}' }} items"
               [rowsPerPageOptions]="[10, 20, 50]"
               [loading]="loading"
               styleClass="p-datatable-sm"
@@ -115,9 +145,7 @@ import {
                 <tr>
                   <td>
                     <span class="font-medium">{{ balance.item_code }}</span>
-                    @if (balance.rfid_tag) {
-                      <div class="text-xs text-gray-500">RFID: {{ balance.rfid_tag }}</div>
-                    }
+                    <div *ngIf="balance.rfid_tag" class="text-xs text-gray-500">RFID: {{ balance.rfid_tag }}</div>
                   </td>
                   <td>{{ balance.item_name }}</td>
                   <td>
@@ -143,13 +171,10 @@ import {
                     <span class="text-xs">{{ balance.batch_number || '-' }}</span>
                   </td>
                   <td>
-                    @if (balance.expiry_date) {
-                      <span class="text-xs" [class.text-red-600]="isExpiringSoon(balance.expiry_date)">
-                        {{ balance.expiry_date | date: 'dd MMM yyyy' }}
-                      </span>
-                    } @else {
-                      <span class="text-xs text-gray-400">-</span>
-                    }
+                    <span *ngIf="balance.expiry_date" class="text-xs" [class.text-red-600]="isExpiringSoon(balance.expiry_date)">
+                      {{ balance.expiry_date | date: 'dd MMM yyyy' }}
+                    </span>
+                    <span *ngIf="!balance.expiry_date" class="text-xs text-gray-400">-</span>
                   </td>
                   <td>
                     <span class="text-xs">{{ balance.location_code || '-' }}</span>
@@ -165,22 +190,10 @@ import {
               </ng-template>
             </p-table>
           </div>
-        </p-tabpanel>
+          </p-tabpanel>
 
-        <p-tabpanel value="alerts">
-          <ng-template pTemplate="header">
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="AlertTriangleIcon" class="w-4 h-4"></lucide-icon>
-              <span>Alerts</span>
-              @if (unacknowledgedAlerts > 0) {
-                <span class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                  {{ unacknowledgedAlerts }}
-                </span>
-              }
-            </div>
-          </ng-template>
-          
-          <div class="bg-white rounded-lg shadow-sm">
+          <p-tabpanel value="alerts">
+            <div class="bg-white rounded-lg ">
             <p-table
               [value]="alerts"
               [paginator]="true"
@@ -224,16 +237,14 @@ import {
                     <span class="text-xs">{{ alert.created_at | date: 'dd MMM yyyy HH:mm' }}</span>
                   </td>
                   <td>
-                    @if (!alert.is_acknowledged) {
-                      <button
-                        pButton
-                        label="Acknowledge"
-                        class="p-button-sm p-button-text"
-                        (click)="acknowledgeAlert(alert)"
-                      ></button>
-                    } @else {
-                      <span class="text-xs text-gray-500">Acknowledged</span>
-                    }
+                    <button
+                      *ngIf="!alert.is_acknowledged"
+                      pButton
+                      label="Acknowledge"
+                      class="p-button-sm p-button-text"
+                      (click)="acknowledgeAlert(alert)"
+                    ></button>
+                    <span *ngIf="alert.is_acknowledged" class="text-xs text-gray-500">Acknowledged</span>
                   </td>
                 </tr>
               </ng-template>
@@ -246,17 +257,10 @@ import {
               </ng-template>
             </p-table>
           </div>
-        </p-tabpanel>
+          </p-tabpanel>
 
-        <p-tabpanel value="expiring">
-          <ng-template pTemplate="header">
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
-              <span>Expiring Items</span>
-            </div>
-          </ng-template>
-          
-          <div class="bg-white rounded-lg shadow-sm">
+          <p-tabpanel value="expiring">
+            <div class="bg-white rounded-lg ">
             <p-table
               [value]="expiringItems"
               [paginator]="true"
@@ -311,17 +315,10 @@ import {
               </ng-template>
             </p-table>
           </div>
-        </p-tabpanel>
+          </p-tabpanel>
 
-        <p-tabpanel value="aging">
-          <ng-template pTemplate="header">
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="TrendingDownIcon" class="w-4 h-4"></lucide-icon>
-              <span>Stock Aging</span>
-            </div>
-          </ng-template>
-          
-          <div class="bg-white rounded-lg shadow-sm">
+          <p-tabpanel value="aging">
+            <div class="bg-white rounded-lg ">
             <p-table
               [value]="agingReport"
               [paginator]="true"
@@ -375,17 +372,10 @@ import {
               </ng-template>
             </p-table>
           </div>
-        </p-tabpanel>
+          </p-tabpanel>
 
-        <p-tabpanel value="history">
-          <ng-template pTemplate="header">
-            <div class="flex items-center gap-2">
-              <lucide-icon [img]="ClockIcon" class="w-4 h-4"></lucide-icon>
-              <span>Movement History</span>
-            </div>
-          </ng-template>
-          
-          <div class="bg-white rounded-lg shadow-sm">
+          <p-tabpanel value="history">
+            <div class="bg-white rounded-lg ">
             <p-table
               [value]="history"
               [paginator]="true"
@@ -447,7 +437,8 @@ import {
               </ng-template>
             </p-table>
           </div>
-        </p-tabpanel>
+          </p-tabpanel>
+        </p-tabpanels>
       </p-tabs>
     </div>
 
@@ -460,9 +451,10 @@ export class StockBalanceViewComponent implements OnInit {
 
   // Icons
   PackageIcon = Package;
-  AlertTriangleIcon = AlertTriangle;
+  AlertTriangleIcon = TriangleAlert;
   ClockIcon = Clock;
   TrendingDownIcon = TrendingDown;
+  TrendingUpIcon = TrendingUp;
 
   balances: StockBalance[] = [];
   filteredBalances: StockBalance[] = [];
@@ -492,7 +484,7 @@ export class StockBalanceViewComponent implements OnInit {
         this.filteredBalances = balances;
         this.loading = false;
       },
-      error: (error) => {
+      error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',

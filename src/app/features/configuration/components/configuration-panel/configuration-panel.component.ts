@@ -9,6 +9,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { PasswordModule } from 'primeng/password';
+import { LucideAngularModule, Settings, Save, Download, RotateCcw } from 'lucide-angular';
 import { ConfigurationService } from '../../services/configuration.service';
 import { Configuration, KawasanType, OperationMode } from '../../models/configuration.model';
 
@@ -29,13 +30,24 @@ import { Configuration, KawasanType, OperationMode } from '../../models/configur
         CheckboxModule,
         ButtonModule,
         DatePickerModule,
-        PasswordModule
+        PasswordModule,
+        LucideAngularModule
     ],
     template: `
-        <div class="p-6">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">System Configuration</h2>
+        <div class="main-layout">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <lucide-icon [img]="SettingsIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
+                        System Configuration
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Configure system settings and integrations</p>
+                </div>
+            </div>
 
+            <!-- Configuration Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
                 <p-tabs>
                     <!-- Company Info Tab -->
                     <p-tabpanel header="Company Information">
@@ -443,24 +455,27 @@ import { Configuration, KawasanType, OperationMode } from '../../models/configur
                     <button 
                         pButton 
                         label="Save Configuration" 
-                        icon="pi pi-save"
                         (click)="saveConfiguration()"
                         class="p-button-primary"
-                    ></button>
+                    >
+                        <lucide-icon [img]="SaveIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                     <button 
                         pButton 
                         label="Backup" 
-                        icon="pi pi-download"
                         (click)="backupConfiguration()"
                         class="p-button-secondary"
-                    ></button>
+                    >
+                        <lucide-icon [img]="DownloadIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                     <button 
                         pButton 
                         label="Reset to Default" 
-                        icon="pi pi-refresh"
                         (click)="resetToDefault()"
                         class="p-button-warning"
-                    ></button>
+                    >
+                        <lucide-icon [img]="RotateCcwIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                 </div>
             </div>
         </div>
@@ -468,6 +483,12 @@ import { Configuration, KawasanType, OperationMode } from '../../models/configur
 })
 export class ConfigurationPanelComponent implements OnInit {
     private configService = inject(ConfigurationService);
+
+    // Lucide Icons
+    SettingsIcon = Settings;
+    SaveIcon = Save;
+    DownloadIcon = Download;
+    RotateCcwIcon = RotateCcw;
 
     config!: Configuration;
 

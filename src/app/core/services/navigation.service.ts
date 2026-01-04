@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { LucideIconData } from 'lucide-angular';
+import * as lucideIcons from 'lucide-angular';
 
 /**
  * MenuItem Interface
@@ -8,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 export interface MenuItem {
     id: string;
     label: string;
-    icon: string;
+    icon: LucideIconData;
     route: string;
     badge?: number;
     children?: MenuItem[];
@@ -62,92 +64,126 @@ export class NavigationService {
             {
                 id: 'dashboard',
                 label: 'Dashboard',
-                icon: 'pi pi-home',
+                icon: lucideIcons.LayoutDashboard,
                 route: '/dashboard'
             },
             {
-                id: 'inventory',
-                label: 'Inventory',
-                icon: 'pi pi-box',
-                route: '/inventory'
+                id: 'master-data',
+                label: 'Master Data',
+                icon: lucideIcons.Database,
+                route: '#',
+                children: [
+                    {
+                        id: 'inventory',
+                        label: 'Items',
+                        icon: lucideIcons.Package,
+                        route: '/inventory'
+                    },
+                    {
+                        id: 'warehouse',
+                        label: 'Warehouse',
+                        icon: lucideIcons.Warehouse,
+                        route: '/warehouses'
+                    },
+                    {
+                        id: 'suppliers',
+                        label: 'Suppliers',
+                        icon: lucideIcons.Truck,
+                        route: '/suppliers'
+                    },
+                    {
+                        id: 'customers',
+                        label: 'Customers',
+                        icon: lucideIcons.Building2,
+                        route: '/customers'
+                    },
+                    {
+                        id: 'bc-documents',
+                        label: 'BC Documents',
+                        icon: lucideIcons.FileText,
+                        route: '/bc-documents'
+                    },
+                    {
+                        id: 'users',
+                        label: 'Users',
+                        icon: lucideIcons.Users,
+                        route: '/users'
+                    }
+                ]
             },
             {
                 id: 'inbound',
                 label: 'Inbound',
-                icon: 'pi pi-arrow-down',
+                icon: lucideIcons.PackageCheck,
                 route: '/inbound'
             },
             {
                 id: 'outbound',
                 label: 'Outbound',
-                icon: 'pi pi-arrow-up',
+                icon: lucideIcons.PackageOpen,
                 route: '/outbound'
             },
             {
                 id: 'production',
                 label: 'Production',
-                icon: 'pi pi-cog',
+                icon: lucideIcons.Factory,
                 route: '/production'
             },
             {
-                id: 'stock-mutation',
-                label: 'Stock Mutation',
-                icon: 'pi pi-arrows-h',
-                route: '/stock-mutation'
-            },
-            {
-                id: 'stock-opname',
-                label: 'Stock Opname',
-                icon: 'pi pi-list',
-                route: '/stock-opname'
-            },
-            {
-                id: 'stock-balance',
-                label: 'Stock Balance',
-                icon: 'pi pi-chart-line',
-                route: '/stock-balance'
+                id: 'stock',
+                label: 'Stock',
+                icon: lucideIcons.Boxes,
+                route: '#',
+                children: [
+                    {
+                        id: 'stock-mutation',
+                        label: 'Stock Mutation',
+                        icon: lucideIcons.ArrowRightLeft,
+                        route: '/stock-mutation'
+                    },
+                    {
+                        id: 'stock-opname',
+                        label: 'Stock Opname',
+                        icon: lucideIcons.ClipboardList,
+                        route: '/stock-opname'
+                    },
+                    {
+                        id: 'stock-balance',
+                        label: 'Stock Balance',
+                        icon: lucideIcons.TrendingUp,
+                        route: '/stock-balance'
+                    }
+                ]
             },
             {
                 id: 'traceability',
                 label: 'Traceability',
-                icon: 'pi pi-sitemap',
+                icon: lucideIcons.GitBranch,
                 route: '/traceability'
-            },
-            {
-                id: 'bc-documents',
-                label: 'BC Documents',
-                icon: 'pi pi-file-pdf',
-                route: '/bc-documents'
             },
             {
                 id: 'customs-sync',
                 label: 'Customs Sync',
-                icon: 'pi pi-sync',
+                icon: lucideIcons.RefreshCw,
                 route: '/customs-integration'
             },
             {
                 id: 'reports',
                 label: 'Reports',
-                icon: 'pi pi-chart-pie',
+                icon: lucideIcons.BarChart3,
                 route: '/reports'
             },
             {
                 id: 'audit-trail',
                 label: 'Audit Trail',
-                icon: 'pi pi-book',
+                icon: lucideIcons.History,
                 route: '/audit-trail'
             },
             {
                 id: 'import-export',
                 label: 'Import/Export',
-                icon: 'pi pi-upload',
+                icon: lucideIcons.Upload,
                 route: '/import-export'
-            },
-            {
-                id: 'users',
-                label: 'User Management',
-                icon: 'pi pi-users',
-                route: '/users'
             }
         ];
     }

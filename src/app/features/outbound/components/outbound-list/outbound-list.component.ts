@@ -28,7 +28,7 @@ import { OutboundDemoService } from '../../services/outbound-demo.service';
             </div>
 
             <!-- Data Table -->
-            <div class="bg-white rounded-lg shadow-sm" style="max-height: calc(100vh - 16rem); overflow-y: auto">
+            <div class="bg-white rounded-lg shadow-sm p-6" style="max-height: calc(100vh - 16rem); overflow-y: auto">
                 <p-table [value]="outbounds" [paginator]="true" [rows]="20" [rowsPerPageOptions]="[10, 20, 50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} outbounds">
                     <ng-template pTemplate="header">
                         <tr>

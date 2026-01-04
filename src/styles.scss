@@ -18,6 +18,7 @@ body {
     /* gray-900 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden !important;
 }
 
 /* Inter font optimization */
@@ -28,7 +29,7 @@ body {
 }
 
 .main-layout {
-    height: calc(100vh - 7rem);
+    height: calc(100vh - 7.5rem);
     overflow-x: auto;
 }
 
@@ -78,4 +79,23 @@ p-select.p-inputtext-sm {
 p-datepicker,
 p-inputnumber {
     padding: 0 !important;
+}
+
+.p-datepicker:has(.p-datepicker-dropdown) .p-datepicker-input {
+    width: 100% !important;
+}
+
+.p-paginator-current {
+    font-size: 14px !important;
+    margin-right: auto !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.p-tabpanels {
+    background-color: white !important;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }

@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { TabsModule } from 'primeng/tabs';
+import { LucideAngularModule, RefreshCw, Play, Trash2, RotateCcw } from 'lucide-angular';
 import { CustomsIntegrationService } from '../../services/customs-integration.service';
 import { SyncQueue, CEISAStatus, SyncStatus } from '../../models/customs-integration.model';
 
@@ -21,61 +22,77 @@ import { SyncQueue, CEISAStatus, SyncStatus } from '../../models/customs-integra
         ButtonModule,
         CardModule,
         TagModule,
-        TabsModule
+        TabsModule,
+        LucideAngularModule
     ],
     template: `
-        <div class="p-6">
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Customs Integration Dashboard</h2>
-                
-                <!-- Summary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <div class="text-sm text-blue-600 font-medium">Pending Sync</div>
-                        <div class="text-2xl font-bold text-blue-900">{{ pendingCount }}</div>
-                    </div>
-                    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-                        <div class="text-sm text-green-600 font-medium">Completed</div>
-                        <div class="text-2xl font-bold text-green-900">{{ completedCount }}</div>
-                    </div>
-                    <div class="bg-red-50 rounded-lg p-4 border border-red-200">
-                        <div class="text-sm text-red-600 font-medium">Failed</div>
-                        <div class="text-2xl font-bold text-red-900">{{ failedCount }}</div>
-                    </div>
-                    <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                        <div class="text-sm text-yellow-600 font-medium">In Progress</div>
-                        <div class="text-2xl font-bold text-yellow-900">{{ inProgressCount }}</div>
-                    </div>
+        <div class="main-layout">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <lucide-icon [img]="RefreshCwIcon" class="w-6 h-6 text-sky-600"></lucide-icon>
+                        Customs Integration Dashboard
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Monitor and manage customs synchronization</p>
                 </div>
+            </div>
 
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div class="text-sm text-blue-600 font-medium">Pending Sync</div>
+                    <div class="text-2xl font-bold text-blue-900">{{ pendingCount }}</div>
+                </div>
+                <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div class="text-sm text-green-600 font-medium">Completed</div>
+                    <div class="text-2xl font-bold text-green-900">{{ completedCount }}</div>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                    <div class="text-sm text-red-600 font-medium">Failed</div>
+                    <div class="text-2xl font-bold text-red-900">{{ failedCount }}</div>
+                </div>
+                <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                    <div class="text-sm text-yellow-600 font-medium">In Progress</div>
+                    <div class="text-2xl font-bold text-yellow-900">{{ inProgressCount }}</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                 <div class="flex gap-3">
                     <button 
                         pButton 
                         label="Process Queue" 
-                        icon="pi pi-play"
                         (click)="processQueue()"
                         class="p-button-primary"
-                    ></button>
+                    >
+                        <lucide-icon [img]="PlayIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                     <button 
                         pButton 
                         label="Refresh" 
-                        icon="pi pi-refresh"
                         (click)="loadData()"
                         class="p-button-secondary"
-                    ></button>
+                    >
+                        <lucide-icon [img]="RefreshCwIcon" class="w-4 h-4"></lucide-icon>
+                    </button>
                     <button 
                         pButton 
                         label="Clear Completed" 
-                        icon="pi pi-trash"
                         (click)="clearCompleted()"
                         class="p-button-warning"
-                    ></button>
+                    >
+                        <lucide-icon [img]="Trash2Icon" class="w-4 h-4"></lucide-icon>
+                    </button>
                 </div>
             </div>
 
-            <p-tabs>
+            <!-- Tables Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <p-tabs>
                 <p-tabpanel header="Sync Queue">
-                    <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="py-4">
                         <p-table [value]="syncQueue" [paginator]="true" [rows]="10">
                             <ng-template pTemplate="header">
                                 <tr>
@@ -134,7 +151,7 @@ import { SyncQueue, CEISAStatus, SyncStatus } from '../../models/customs-integra
                 </p-tabpanel>
 
                 <p-tabpanel header="CEISA Status">
-                    <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="py-4">
                         <p-table [value]="ceisaStatuses" [paginator]="true" [rows]="10">
                             <ng-template pTemplate="header">
                                 <tr>
@@ -182,11 +199,18 @@ import { SyncQueue, CEISAStatus, SyncStatus } from '../../models/customs-integra
                     </div>
                 </p-tabpanel>
             </p-tabs>
+            </div>
         </div>
     `
 })
 export class CustomsSyncDashboardComponent implements OnInit {
     private customsService = inject(CustomsIntegrationService);
+
+    // Lucide Icons
+    RefreshCwIcon = RefreshCw;
+    PlayIcon = Play;
+    Trash2Icon = Trash2;
+    RotateCcwIcon = RotateCcw;
 
     syncQueue: SyncQueue[] = [];
     ceisaStatuses: CEISAStatus[] = [];

@@ -1,1 +1,9 @@
-// Navbar Component Styles
+:host ::ng-deep {
+    .p-menu-item-icon {
+        font-size: 12px;
+    }
+
+    .p-menu-item-label {
+        font-size: 14px;
+    }
+}

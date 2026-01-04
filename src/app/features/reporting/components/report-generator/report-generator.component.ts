@@ -25,10 +25,20 @@ import { ReportService, ReportParameters } from '../../services/report.service';
         TableModule
     ],
     template: `
-        <div class="p-6">
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Report Generator</h2>
+        <div class="main-layout">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="pi pi-chart-bar text-sky-600"></i>
+                        Report Generator
+                    </h1>
+                    <p class="text-sm text-gray-600 mt-1">Generate and export various inventory reports</p>
+                </div>
+            </div>
 
+            <!-- Table Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                 <!-- Report Type Selection -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
@@ -54,6 +64,7 @@ import { ReportService, ReportParameters } from '../../services/report.service';
                             dateFormat="dd/mm/yy"
                             [showIcon]="true"
                             class="w-full"
+                            appendTo="body"
                         ></p-datepicker>
                     </div>
                     <div>
@@ -63,6 +74,7 @@ import { ReportService, ReportParameters } from '../../services/report.service';
                             dateFormat="dd/mm/yy"
                             [showIcon]="true"
                             class="w-full"
+                            appendTo="body"
                         ></p-datepicker>
                     </div>
                     <div *ngIf="showWarehouseFilter">
@@ -75,6 +87,7 @@ import { ReportService, ReportParameters } from '../../services/report.service';
                             placeholder="All Warehouses"
                             [showClear]="true"
                             class="w-full"
+                            appendTo="body"
                         ></p-select>
                     </div>
                 </div>
@@ -109,7 +122,7 @@ import { ReportService, ReportParameters } from '../../services/report.service';
             </div>
 
             <!-- Report Results -->
-            <div *ngIf="reportData.length > 0" class="bg-white rounded-lg shadow-md p-6">
+            <div *ngIf="reportData.length > 0" class="bg-white rounded-lg shadow-sm p-6">
                 <h3 class="text-xl font-semibold text-gray-900 mb-4">
                     {{ getReportTitle() }}
                 </h3>
